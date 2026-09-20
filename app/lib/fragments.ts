@@ -279,6 +279,30 @@ export const VESTIGE_PRODUCT_CARD_FRAGMENT = `#graphql
       id
       availableForSale
     }
+    # The grid card lets a shopper pick a variant and add to cart without
+    # opening the product page, so it needs every variant, not just the first.
+    variants(first: 100) {
+      nodes {
+        id
+        title
+        availableForSale
+        price {
+          amount
+          currencyCode
+        }
+        image {
+          id
+          url
+          altText
+          width
+          height
+        }
+        selectedOptions {
+          name
+          value
+        }
+      }
+    }
   }
 ` as const;
 
