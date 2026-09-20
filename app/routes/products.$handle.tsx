@@ -1,4 +1,4 @@
-import {redirect, useLoaderData} from 'react-router';
+import {useLoaderData} from 'react-router';
 import type {Route} from './+types/products.$handle';
 import {
   getSelectedProductOptions,
@@ -7,36 +7,30 @@ import {
   getProductOptions,
   getAdjacentAndFirstAvailableVariants,
   useSelectedOptionInUrlParam,
+  Money,
 } from '@shopify/hydrogen';
-import {ProductPrice} from '~/components/ProductPrice';
-import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
+import {ProductGallery} from '~/components/ProductGallery';
+import {Accordion} from '~/components/Accordion';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {editionLine} from '~/lib/season';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [
-    {title: `Hydrogen | ${data?.product.title ?? ''}`},
+    {title: `VESTIGE — ${data?.product.title ?? ''}`},
+    {rel: 'canonical', href: `/products/${data?.product.handle}`},
     {
-      rel: 'canonical',
-      href: `/products/${data?.product.handle}`,
+      name: 'description',
+      content: data?.product.seo?.description ?? data?.product.description ?? '',
     },
   ];
 };
 
 export async function loader(args: Route.LoaderArgs) {
-  // Start fetching non-critical data without blocking time to first byte
-  const deferredData = loadDeferredData(args);
-
-  // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
-
-  return {...deferredData, ...criticalData};
+  return {...criticalData};
 }
 
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- */
 async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
   const {handle} = params;
   const {storefront} = context;
@@ -49,7 +43,6 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     storefront.query(PRODUCT_QUERY, {
       variables: {handle, selectedOptions: getSelectedProductOptions(request)},
     }),
-    // Add other queries here, so that they are loaded in parallel
   ]);
 
   if (!product?.id) {
@@ -59,21 +52,7 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
   // The API handle might be localized, so redirect to the localized handle
   redirectIfHandleIsLocalized(request, {handle, data: product});
 
-  return {
-    product,
-  };
-}
-
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- */
-function loadDeferredData({context, params}: Route.LoaderArgs) {
-  // Put any API calls that is not critical to be available on first page render
-  // For example: product reviews, product recommendations, social feeds.
-
-  return {};
+  return {product};
 }
 
 export default function Product() {
@@ -89,7 +68,6 @@ export default function Product() {
   // only when no search params are set in the url
   useSelectedOptionInUrlParam(selectedVariant.selectedOptions);
 
-  // Get the product options array
   const productOptions = getProductOptions({
     ...product,
     selectedOrFirstAvailableVariant: selectedVariant,
@@ -97,29 +75,100 @@ export default function Product() {
 
   const {title, descriptionHtml} = product;
 
+  // Gallery: the selected variant's image first, then the rest of the media.
+  const mediaImages = product.images?.nodes ?? [];
+  const images = selectedVariant?.image
+    ? [
+        selectedVariant.image,
+        ...mediaImages.filter((image) => image.id !== selectedVariant.image?.id),
+      ]
+    : mediaImages;
+
+  const edition = editionLine(product.editionSize?.value);
+
   return (
-    <div className="product">
-      <ProductImage image={selectedVariant?.image} />
-      <div className="product-main">
-        <h1>{title}</h1>
-        <ProductPrice
-          price={selectedVariant?.price}
-          compareAtPrice={selectedVariant?.compareAtPrice}
-        />
-        <br />
-        <ProductForm
-          productOptions={productOptions}
-          selectedVariant={selectedVariant}
-        />
-        <br />
-        <br />
-        <p>
-          <strong>Description</strong>
-        </p>
-        <br />
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-        <br />
+    <div>
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_480px]">
+        {/* Gallery */}
+        <div className="min-w-0 border-b border-ink lg:border-r lg:border-b-0">
+          <ProductGallery images={images} title={title} />
+        </div>
+
+        {/* Sticky detail column */}
+        <div className="lg:sticky lg:top-[132px] lg:h-fit">
+          <div className="px-5 py-10 lg:px-10 lg:py-14">
+            <p className="text-[11px] tracking-[0.3em] text-silver uppercase">
+              Limited Series / 2026 FW
+            </p>
+
+            <h1 className="mt-5 text-[22px] leading-[1.25] tracking-[0.14em] uppercase">
+              {title}
+            </h1>
+
+            <div className="mt-4 flex items-baseline gap-3 text-[14px] tracking-[0.14em]">
+              {selectedVariant?.price ? (
+                <Money data={selectedVariant.price} />
+              ) : null}
+              {selectedVariant?.compareAtPrice &&
+              Number(selectedVariant.compareAtPrice.amount) >
+                Number(selectedVariant.price?.amount ?? 0) ? (
+                <s className="text-silver">
+                  <Money data={selectedVariant.compareAtPrice} />
+                </s>
+              ) : null}
+            </div>
+
+            <div className="mt-10">
+              <ProductForm
+                productOptions={productOptions}
+                selectedVariant={selectedVariant}
+              />
+            </div>
+
+            <p className="mt-5 text-[11px] leading-[1.7] tracking-[0.14em] text-silver uppercase">
+              Free shipping over $300 · Ships within two business days
+              {edition ? ` · ${edition}` : ''}
+            </p>
+
+            <div className="mt-12 border-t border-ink">
+              <Accordion title="Details" defaultOpen>
+                <div
+                  className="text-[13px] leading-[1.8] [&_a]:underline"
+                  dangerouslySetInnerHTML={{__html: descriptionHtml}}
+                />
+              </Accordion>
+
+              <Accordion title="Size & Fit">
+                <div className="space-y-3 text-[13px] leading-[1.8]">
+                  <p>
+                    Cut true to size with a deliberately generous shoulder and a
+                    straight body. Between sizes, take the smaller one for a
+                    closer line.
+                  </p>
+                  <p className="text-silver">
+                    The model is 186cm and wears a size Medium.
+                  </p>
+                </div>
+              </Accordion>
+
+              <Accordion title="Shipping & Returns">
+                <div className="space-y-3 text-[13px] leading-[1.8]">
+                  <p>
+                    Orders over $300 ship free and arrive within three to five
+                    business days. International delivery is calculated at
+                    checkout.
+                  </p>
+                  <p className="text-silver">
+                    Unworn pieces may be returned within fourteen days with the
+                    edition tag attached.
+                  </p>
+                </div>
+              </Accordion>
+            </div>
+          </div>
+        </div>
       </div>
+
       <Analytics.ProductView
         data={{
           products: [
@@ -186,6 +235,18 @@ const PRODUCT_FRAGMENT = `#graphql
     description
     encodedVariantExistence
     encodedVariantAvailability
+    images(first: 8) {
+      nodes {
+        id
+        url
+        altText
+        width
+        height
+      }
+    }
+    editionSize: metafield(namespace: "product", key: "edition_size") {
+      value
+    }
     options {
       name
       optionValues {

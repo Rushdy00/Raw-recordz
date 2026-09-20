@@ -8,6 +8,14 @@ import {AddToCartButton} from './AddToCartButton';
 import {useAside} from './Aside';
 import type {ProductFragment} from 'storefrontapi.generated';
 
+/**
+ * Option selectors and the add-to-cart action.
+ *
+ * Option values render as 58×48 square outlined boxes: selected is solid
+ * black, unavailable is grey-on-grey and not clickable. Selecting a value
+ * writes it to the URL search params, per the Hydrogen variant pattern, so the
+ * chosen variant is linkable and survives a reload.
+ */
 export function ProductForm({
   productOptions,
   selectedVariant,
@@ -17,16 +25,20 @@ export function ProductForm({
 }) {
   const navigate = useNavigate();
   const {open} = useAside();
+
   return (
-    <div className="product-form">
+    <div className="flex flex-col gap-8">
       {productOptions.map((option) => {
-        // If there is only a single value in the option values, don't display the option
+        // A single-value option is not a choice; don't render a selector.
         if (option.optionValues.length === 1) return null;
 
         return (
-          <div className="product-options" key={option.name}>
-            <h5>{option.name}</h5>
-            <div className="product-options-grid">
+          <fieldset key={option.name} className="flex flex-col gap-3">
+            <legend className="mb-3 text-[11px] tracking-[0.3em] text-silver uppercase">
+              {option.name}
+            </legend>
+
+            <div className="flex flex-wrap gap-2">
               {option.optionValues.map((value) => {
                 const {
                   name,
@@ -39,73 +51,67 @@ export function ProductForm({
                   swatch,
                 } = value;
 
+                const boxClass = [
+                  'flex h-[48px] w-[58px] items-center justify-center border text-[11px] tracking-[0.14em] uppercase',
+                  selected
+                    ? 'border-ink bg-ink text-paper'
+                    : available
+                      ? 'border-ink bg-paper text-ink'
+                      : // Sold out: grey border, grey text, not clickable.
+                        'border-silver bg-paper text-silver cursor-not-allowed',
+                ].join(' ');
+
+                // A combined-listing value lives on another product URL, so it
+                // must be a real anchor for crawlers.
                 if (isDifferentProduct) {
-                  // SEO
-                  // When the variant is a combined listing child product
-                  // that leads to a different url, we need to render it
-                  // as an anchor tag
                   return (
                     <Link
-                      className="product-options-item"
+                      className={boxClass}
                       key={option.name + name}
                       prefetch="intent"
                       preventScrollReset
                       replace
                       to={`/products/${handle}?${variantUriQuery}`}
-                      style={{
-                        border: selected
-                          ? '1px solid black'
-                          : '1px solid transparent',
-                        opacity: available ? 1 : 0.3,
-                      }}
+                      aria-current={selected ? 'true' : undefined}
                     >
                       <ProductOptionSwatch swatch={swatch} name={name} />
                     </Link>
                   );
-                } else {
-                  // SEO
-                  // When the variant is an update to the search param,
-                  // render it as a button with javascript navigating to
-                  // the variant so that SEO bots do not index these as
-                  // duplicated links
-                  return (
-                    <button
-                      type="button"
-                      className={`product-options-item${
-                        exists && !selected ? ' link' : ''
-                      }`}
-                      key={option.name + name}
-                      style={{
-                        border: selected
-                          ? '1px solid black'
-                          : '1px solid transparent',
-                        opacity: available ? 1 : 0.3,
-                      }}
-                      disabled={!exists}
-                      onClick={() => {
-                        if (!selected) {
-                          void navigate(`?${variantUriQuery}`, {
-                            replace: true,
-                            preventScrollReset: true,
-                          });
-                        }
-                      }}
-                    >
-                      <ProductOptionSwatch swatch={swatch} name={name} />
-                    </button>
-                  );
                 }
+
+                return (
+                  <button
+                    type="button"
+                    className={boxClass}
+                    key={option.name + name}
+                    disabled={!exists || !available}
+                    aria-pressed={selected}
+                    aria-label={
+                      available
+                        ? `${option.name} ${name}`
+                        : `${option.name} ${name}, sold out`
+                    }
+                    onClick={() => {
+                      if (!selected) {
+                        void navigate(`?${variantUriQuery}`, {
+                          replace: true,
+                          preventScrollReset: true,
+                        });
+                      }
+                    }}
+                  >
+                    <ProductOptionSwatch swatch={swatch} name={name} />
+                  </button>
+                );
               })}
             </div>
-            <br />
-          </div>
+          </fieldset>
         );
       })}
+
       <AddToCartButton
         disabled={!selectedVariant || !selectedVariant.availableForSale}
-        onClick={() => {
-          open('cart');
-        }}
+        onClick={() => open('cart')}
         lines={
           selectedVariant
             ? [
@@ -134,17 +140,17 @@ function ProductOptionSwatch({
   const image = swatch?.image?.previewImage?.url;
   const color = swatch?.color;
 
-  if (!image && !color) return name;
+  if (!image && !color) return <>{name}</>;
 
   return (
-    <div
+    <span
       aria-label={name}
-      className="product-option-label-swatch"
-      style={{
-        backgroundColor: color || 'transparent',
-      }}
+      className="block h-[26px] w-[26px] border border-ink"
+      style={{backgroundColor: color || 'transparent'}}
     >
-      {!!image && <img src={image} alt={name} />}
-    </div>
+      {image ? (
+        <img src={image} alt="" className="h-full w-full object-cover" />
+      ) : null}
+    </span>
   );
 }
