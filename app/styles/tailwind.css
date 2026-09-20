@@ -171,7 +171,7 @@
     align-items: center;
     justify-content: space-around;
     gap: 12px;
-    height: 48px;
+    height: 42px;
     flex: 1 1 0%;
     min-width: 0;
     background: var(--color-ink);

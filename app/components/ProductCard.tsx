@@ -158,7 +158,7 @@ export function ProductCard({
       */}
       <div className="card-actions mt-auto flex items-stretch px-3 pb-5 lg:px-4 lg:pb-6">
         {hasChoice ? (
-          <div className="relative flex w-[46%] shrink-0 items-stretch border-y border-l border-ink lg:w-[38%]">
+          <div className="relative flex w-[42%] shrink-0 items-stretch border-y border-l border-ink lg:w-[30%]">
             <label htmlFor={selectId} className="sr-only">
               Select a variant of {product.title}
             </label>
@@ -166,7 +166,7 @@ export function ProductCard({
               id={selectId}
               value={selected?.id ?? ''}
               onChange={(event) => setSelectedId(event.target.value)}
-              className="h-[48px] w-full appearance-none truncate bg-paper pr-[52px] pl-3 text-left text-[13px] lg:pl-4"
+              className="h-[42px] w-full appearance-none truncate bg-paper pr-[48px] pl-3 text-left text-[13px] lg:pl-4"
             >
               {variants.map((variant) => (
                 <option
