@@ -62,8 +62,12 @@ export type HeroSlide = {
 };
 
 /**
- * Placeholder campaign imagery. Dark, wide frames from Unsplash stand in for
- * the real campaign shoot; they carry no third-party branding.
+ * Placeholder campaign imagery: dark, low-key editorial frames from Unsplash
+ * standing in for the real shoot. They carry no third-party branding.
+ *
+ * Each was chosen for mean luminance under ~80/255 so the white display type
+ * and the 0.34 scrim hold up. Keep that in mind when swapping them out —
+ * `scripts/pick-images.mjs` prints the luminance of any candidate.
  */
 export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
   {
@@ -78,8 +82,8 @@ export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
     ],
     link: `/collections/${DROP_COLLECTION_HANDLE}`,
     image: {
-      url: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=2400&q=70',
-      altText: 'Campaign figure in low light wearing a long structured coat',
+      url: 'https://images.unsplash.com/photo-1771514021578-d4fd16565a62?auto=format&fit=crop&w=2400&q=70',
+      altText: 'Campaign figure in near-darkness wearing a long structured coat',
       width: 2400,
       height: 1600,
     },
@@ -96,8 +100,8 @@ export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
     ],
     link: `/collections/${DROP_COLLECTION_HANDLE}`,
     image: {
-      url: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=2400&q=70',
-      altText: 'Dark editorial studio frame with draped fabric',
+      url: 'https://images.unsplash.com/photo-1779810677455-449ae4ee2bc7?auto=format&fit=crop&w=2400&q=70',
+      altText: 'Sculptural jacket with voluminous sleeves against a black ground',
       width: 2400,
       height: 1600,
     },
@@ -114,8 +118,8 @@ export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
     ],
     link: `/collections/${DROP_COLLECTION_HANDLE}`,
     image: {
-      url: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=2400&q=70',
-      altText: 'Two figures in dark outerwear against a shadowed wall',
+      url: 'https://images.unsplash.com/photo-1782528013685-812fbcd20085?auto=format&fit=crop&w=2400&q=70',
+      altText: 'Figure in a fringed garment lit against a deep shadowed studio',
       width: 2400,
       height: 1600,
     },
@@ -132,8 +136,8 @@ export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
     ],
     link: `/collections/${DROP_COLLECTION_HANDLE}`,
     image: {
-      url: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=2400&q=70',
-      altText: 'Low-light campaign frame of a figure in a heavy coat',
+      url: 'https://images.unsplash.com/photo-1776256318694-922979ab0a94?auto=format&fit=crop&w=2400&q=70',
+      altText: 'Desaturated street portrait of a figure in a heavy black coat',
       width: 2400,
       height: 1600,
     },

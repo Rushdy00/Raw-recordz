@@ -37,8 +37,12 @@ export function Footer(_props: FooterProps) {
         </nav>
       </div>
 
-      {/* Sub-footer */}
-      <div className="flex flex-col gap-5 border-t border-ink px-5 py-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+      {/*
+        Sub-footer. The floating CHAT and REWARDS pills are fixed over the
+        bottom corners, so this row is inset horizontally and given extra
+        bottom padding to sit clear of them.
+      */}
+      <div className="flex flex-col gap-5 border-t border-ink px-5 pt-6 pb-24 lg:flex-row lg:items-center lg:justify-between lg:px-[170px] lg:pb-10">
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"

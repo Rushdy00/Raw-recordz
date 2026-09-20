@@ -10,3 +10,5 @@
 
 # Local design verification uses Playwright, installed on demand
 
+shots/
+

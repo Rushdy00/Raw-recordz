@@ -87,3 +87,14 @@ Campaign imagery is placeholder photography from Unsplash, allow-listed in the
 CSP in `app/entry.server.tsx`. Replace both the URLs in `app/lib/vestige.ts` and
 that CSP entry when the real campaign lands in Shopify Files. All copy is
 original.
+
+The hero frames were picked for mean luminance under ~80/255 so the white Anton
+display type and the `rgba(0,0,0,0.34)` scrim stay legible over them. When
+swapping in new frames, check them first:
+
+```bash
+node scripts/pick-images.mjs <unsplash-photo-slug> ...
+```
+
+It prints each candidate's luminance and writes a contact sheet to
+`shots/candidates.png`, so the choice is measured rather than guessed.
