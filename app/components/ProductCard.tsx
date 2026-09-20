@@ -156,9 +156,9 @@ export function ProductCard({
         off, the bar on the right carrying price and label. Products with a
         single variant give the whole row to the bar.
       */}
-      <div className="card-actions mt-auto flex items-stretch px-5 pb-6 lg:px-7 lg:pb-7">
+      <div className="card-actions mt-auto flex items-stretch px-3 pb-5 lg:px-4 lg:pb-6">
         {hasChoice ? (
-          <div className="relative flex w-[45%] shrink-0 items-stretch border-y border-l border-ink">
+          <div className="relative flex w-[46%] shrink-0 items-stretch border-y border-l border-ink lg:w-[38%]">
             <label htmlFor={selectId} className="sr-only">
               Select a variant of {product.title}
             </label>
@@ -166,7 +166,7 @@ export function ProductCard({
               id={selectId}
               value={selected?.id ?? ''}
               onChange={(event) => setSelectedId(event.target.value)}
-              className="h-[48px] w-full appearance-none bg-paper pr-11 pl-4 text-left text-[13px] lg:pl-5"
+              className="h-[48px] w-full appearance-none truncate bg-paper pr-[52px] pl-3 text-left text-[13px] lg:pl-4"
             >
               {variants.map((variant) => (
                 <option

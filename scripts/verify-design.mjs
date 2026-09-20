@@ -135,6 +135,32 @@ ok('selector and bar fill the row', rowFit.fillsRow, JSON.stringify(rowFit));
 ok('white space sits below the row', rowFit.gapBelow >= 20 && rowFit.gapBelow <= 40,
    JSON.stringify(rowFit));
 
+// Near the card edge, but never touching it.
+const inset = await page.locator('.hairline-grid article').first().evaluate((art) => {
+  const row = art.querySelector('.card-actions');
+  const btn = row.querySelector('button[type="submit"]');
+  const sel = row.querySelector('select');
+  const a = art.getBoundingClientRect();
+  return {
+    left: Math.round(sel.closest('div').getBoundingClientRect().left - a.left),
+    right: Math.round(a.right - btn.getBoundingClientRect().right),
+  };
+});
+ok('row is inset from the card edge but close to it',
+   inset.left >= 10 && inset.left <= 22 && inset.right >= 10 && inset.right <= 22,
+   JSON.stringify(inset));
+
+// The bar should dominate the row, not sit at half.
+const share = await page.locator('.hairline-grid article').first().evaluate((art) => {
+  const row = art.querySelector('.card-actions');
+  const btn = row.querySelector('button[type="submit"]');
+  const sel = row.querySelector('select').closest('div');
+  const b = btn.getBoundingClientRect().width;
+  const s2 = sel.getBoundingClientRect().width;
+  return Math.round((b / (b + s2)) * 100);
+});
+ok('bar takes the larger share of the row', share >= 58 && share <= 68, `${share}%`);
+
 // Season block.
 ok('season heading silver', (await page.locator('#season-concept')
   .evaluate((el) => getComputedStyle(el).color)) === 'rgb(138, 138, 141)');
