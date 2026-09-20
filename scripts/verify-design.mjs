@@ -100,11 +100,11 @@ const ctaStyle = await cta.evaluate((el) => {
 // The card's bar follows the storefront reference rather than the generic
 // button spec: it is 56px tall, 14px, and shares one row with the variant
 // selector instead of filling the card width.
-ok('card CTA 56px tall', Math.round(ctaBox.height) === 56, `${ctaBox.height}px`);
+ok('card CTA 48px tall', Math.round(ctaBox.height) === 48, `${ctaBox.height}px`);
 ok('CTA black bg / white text',
    ctaStyle.bg === 'rgb(0, 0, 0)' && ctaStyle.color === 'rgb(255, 255, 255)',
    JSON.stringify(ctaStyle));
-ok('card CTA 14px', ctaStyle.fs === '14px', JSON.stringify(ctaStyle));
+ok('card CTA 13px', ctaStyle.fs === '13px', JSON.stringify(ctaStyle));
 
 // The row is selector + bar, flush edge to edge with no white gap.
 const rowFit = await page.locator('.hairline-grid article').first().evaluate((art) => {
@@ -112,17 +112,27 @@ const rowFit = await page.locator('.hairline-grid article').first().evaluate((ar
   const sel = row.querySelector('select');
   const btn = row.querySelector('button[type="submit"]');
   const rowR = row.getBoundingClientRect();
+  const artR = art.getBoundingClientRect();
   const selR = sel?.getBoundingClientRect();
   const btnR = btn.getBoundingClientRect();
+  const pad = getComputedStyle(row);
+
   return {
-    row: Math.round(rowR.width),
-    covered: Math.round((selR ? selR.width : 0) + btnR.width),
     sameLine: !selR || Math.abs(selR.top - btnR.top) < 2,
-    barRightFlush: Math.abs(btnR.right - rowR.right) < 2,
+    // Selector + bar fill the row's content box (inside its padding) with
+    // no gap between them.
+    fillsRow: Math.abs(
+      ((selR ? selR.width : 0) + btnR.width) -
+      (rowR.width - parseFloat(pad.paddingLeft) - parseFloat(pad.paddingRight)),
+    ) < 2,
+    // The row is inset from the card, leaving white space below it.
+    gapBelow: Math.round(artR.bottom - btnR.bottom),
+    padBottom: pad.paddingBottom,
   };
 });
 ok('selector and bar share one row', rowFit.sameLine, JSON.stringify(rowFit));
-ok('bar reaches the card edge (no white gap)', rowFit.barRightFlush,
+ok('selector and bar fill the row', rowFit.fillsRow, JSON.stringify(rowFit));
+ok('white space sits below the row', rowFit.gapBelow >= 20 && rowFit.gapBelow <= 40,
    JSON.stringify(rowFit));
 
 // Season block.

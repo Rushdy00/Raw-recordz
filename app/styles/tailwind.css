@@ -171,12 +171,12 @@
     align-items: center;
     justify-content: space-around;
     gap: 12px;
-    height: 56px;
+    height: 48px;
     flex: 1 1 0%;
     min-width: 0;
     background: var(--color-ink);
     color: var(--color-paper);
-    font-size: 14px;
+    font-size: 13px;
     letter-spacing: 0;
     border: none;
   }
