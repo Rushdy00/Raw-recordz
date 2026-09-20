@@ -1,5 +1,6 @@
 import {Await, Link} from 'react-router';
 import {Suspense, useId} from 'react';
+import {useOptimisticCart} from '@shopify/hydrogen';
 import type {
   CartApiQueryFragment,
   FooterQuery,
@@ -9,6 +10,9 @@ import {Aside} from '~/components/Aside';
 import {Footer} from '~/components/Footer';
 import {Header, HeaderMenu} from '~/components/Header';
 import {CartMain} from '~/components/CartMain';
+import {FloatingPills} from '~/components/FloatingPills';
+import {NewsletterPopup} from '~/components/NewsletterPopup';
+import {RegionProvider, type Country} from '~/components/RegionModal';
 import {
   SEARCH_ENDPOINT,
   SearchFormPredictive,
@@ -21,6 +25,8 @@ interface PageLayoutProps {
   header: HeaderQuery;
   isLoggedIn: Promise<boolean>;
   publicStoreDomain: string;
+  countries?: Country[] | null;
+  selectedCountry?: string | null;
   children?: React.ReactNode;
 }
 
@@ -31,65 +37,101 @@ export function PageLayout({
   header,
   isLoggedIn,
   publicStoreDomain,
+  countries,
+  selectedCountry,
 }: PageLayoutProps) {
   return (
-    <Aside.Provider>
-      <CartAside cart={cart} />
-      <SearchAside />
-      <MobileMenuAside header={header} publicStoreDomain={publicStoreDomain} />
-      {header && (
-        <Header
+    <RegionProvider countries={countries} selectedCountry={selectedCountry}>
+      <Aside.Provider>
+        <CartAside cart={cart} />
+        <SearchAside />
+        <MobileMenuAside />
+
+        {header && (
+          <Header
+            header={header}
+            cart={cart}
+            isLoggedIn={isLoggedIn}
+            publicStoreDomain={publicStoreDomain}
+          />
+        )}
+
+        <main>{children}</main>
+
+        <Footer
+          footer={footer}
           header={header}
-          cart={cart}
-          isLoggedIn={isLoggedIn}
           publicStoreDomain={publicStoreDomain}
         />
-      )}
-      <main>{children}</main>
-      <Footer
-        footer={footer}
-        header={header}
-        publicStoreDomain={publicStoreDomain}
-      />
-    </Aside.Provider>
+
+        <FloatingPills />
+        <NewsletterPopup />
+      </Aside.Provider>
+    </RegionProvider>
   );
 }
 
+/** Cart drawer — the primary cart UI. Its heading carries the live count. */
 function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
   return (
-    <Aside type="cart" heading="CART">
-      <Suspense fallback={<p>Loading cart ...</p>}>
-        <Await resolve={cart}>
-          {(cart) => {
-            return <CartMain cart={cart} layout="aside" />;
-          }}
-        </Await>
-      </Suspense>
+    <Suspense
+      fallback={
+        <Aside type="cart" heading="CART">
+          <p className="px-6 py-8 text-[12px] tracking-[0.14em] text-silver uppercase">
+            Loading cart…
+          </p>
+        </Aside>
+      }
+    >
+      <Await resolve={cart}>
+        {(resolved) => <CartAsideContents cart={resolved} />}
+      </Await>
+    </Suspense>
+  );
+}
+
+function CartAsideContents({cart}: {cart: CartApiQueryFragment | null}) {
+  const optimisticCart = useOptimisticCart(cart);
+  const count = optimisticCart?.totalQuantity ?? 0;
+
+  return (
+    <Aside type="cart" heading={`CART (${count})`}>
+      <CartMain cart={cart} layout="aside" />
     </Aside>
   );
 }
 
 function SearchAside() {
   const queriesDatalistId = useId();
+
   return (
     <Aside type="search" heading="SEARCH">
-      <div className="predictive-search">
-        <br />
+      <div className="flex flex-col gap-6 px-6 py-6">
         <SearchFormPredictive>
           {({fetchResults, goToSearch, inputRef}) => (
-            <>
+            <div className="flex gap-2">
+              <label htmlFor="predictive-search" className="sr-only">
+                Search
+              </label>
               <input
+                id="predictive-search"
                 name="q"
                 onChange={fetchResults}
                 onFocus={fetchResults}
-                placeholder="Search"
+                placeholder="SEARCH"
                 ref={inputRef}
                 type="search"
                 list={queriesDatalistId}
+                data-autofocus
+                className="min-w-0 flex-1 border border-ink px-4 py-3 text-[12px] tracking-[0.22em] uppercase placeholder:text-silver"
               />
-              &nbsp;
-              <button onClick={goToSearch}>Search</button>
-            </>
+              <button
+                onClick={goToSearch}
+                className="border border-ink px-4 text-[11px] tracking-[0.22em] uppercase"
+              >
+                Go
+              </button>
+            </div>
           )}
         </SearchFormPredictive>
 
@@ -98,7 +140,11 @@ function SearchAside() {
             const {articles, collections, pages, products, queries} = items;
 
             if (state === 'loading' && term.current) {
-              return <div>Loading...</div>;
+              return (
+                <p className="text-[12px] tracking-[0.14em] text-silver uppercase">
+                  Searching…
+                </p>
+              );
             }
 
             if (!total) {
@@ -135,11 +181,9 @@ function SearchAside() {
                   <Link
                     onClick={closeSearch}
                     to={`${SEARCH_ENDPOINT}?q=${term.current}`}
+                    className="text-[11px] tracking-[0.22em] underline uppercase"
                   >
-                    <p>
-                      View all results for <q>{term.current}</q>
-                      &nbsp; →
-                    </p>
+                    View all results
                   </Link>
                 ) : null}
               </>
@@ -151,24 +195,10 @@ function SearchAside() {
   );
 }
 
-function MobileMenuAside({
-  header,
-  publicStoreDomain,
-}: {
-  header: PageLayoutProps['header'];
-  publicStoreDomain: PageLayoutProps['publicStoreDomain'];
-}) {
+function MobileMenuAside() {
   return (
-    header.menu &&
-    header.shop.primaryDomain?.url && (
-      <Aside type="mobile" heading="MENU">
-        <HeaderMenu
-          menu={header.menu}
-          viewport="mobile"
-          primaryDomainUrl={header.shop.primaryDomain.url}
-          publicStoreDomain={publicStoreDomain}
-        />
-      </Aside>
-    )
+    <Aside type="mobile" heading="MENU">
+      <HeaderMenu />
+    </Aside>
   );
 }

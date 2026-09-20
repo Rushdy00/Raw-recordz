@@ -1,6 +1,7 @@
-import {Suspense} from 'react';
-import {Await, NavLink} from 'react-router';
+import {Link} from 'react-router';
 import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
+import {BRAND_STORY, FOOTER_LINKS} from '~/lib/vestige';
+import {useRegion} from '~/components/RegionModal';
 
 interface FooterProps {
   footer: Promise<FooterQuery | null>;
@@ -8,122 +9,57 @@ interface FooterProps {
   publicStoreDomain: string;
 }
 
-export function Footer({
-  footer: footerPromise,
-  header,
-  publicStoreDomain,
-}: FooterProps) {
-  return (
-    <Suspense>
-      <Await resolve={footerPromise}>
-        {(footer) => (
-          <footer className="footer">
-            {footer?.menu && header.shop.primaryDomain?.url && (
-              <FooterMenu
-                menu={footer.menu}
-                primaryDomainUrl={header.shop.primaryDomain.url}
-                publicStoreDomain={publicStoreDomain}
-              />
-            )}
-          </footer>
-        )}
-      </Await>
-    </Suspense>
-  );
-}
+/**
+ * Two-column footer: brand story on the left, links on the right, with the
+ * region / language selectors and copyright in a sub-footer beneath.
+ */
+export function Footer(_props: FooterProps) {
+  const {open, country, language} = useRegion();
 
-function FooterMenu({
-  menu,
-  primaryDomainUrl,
-  publicStoreDomain,
-}: {
-  menu: FooterQuery['menu'];
-  primaryDomainUrl: FooterProps['header']['shop']['primaryDomain']['url'];
-  publicStoreDomain: string;
-}) {
   return (
-    <nav className="footer-menu" role="navigation">
-      {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
-        if (!item.url) return null;
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        const isExternal = !url.startsWith('/');
-        return isExternal ? (
-          <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
-            {item.title}
-          </a>
-        ) : (
-          <NavLink
-            end
-            key={item.id}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
+    <footer className="border-t border-ink bg-paper">
+      <div className="grid grid-cols-1 gap-12 px-5 py-[100px] lg:grid-cols-[1fr_auto] lg:gap-24 lg:px-8 lg:py-[120px]">
+        <div className="max-w-[640px]">
+          <p className="text-[14px] leading-[1.85] text-ink">{BRAND_STORY}</p>
+        </div>
+
+        <nav aria-label="Footer" className="flex flex-col gap-4 lg:min-w-[220px]">
+          {FOOTER_LINKS.map((link) => (
+            <Link
+              key={link.title}
+              to={link.url}
+              prefetch="intent"
+              className="text-[12px] tracking-[0.22em] uppercase hover:underline"
+            >
+              {link.title}
+            </Link>
+          ))}
+        </nav>
+      </div>
+
+      {/* Sub-footer */}
+      <div className="flex flex-col gap-5 border-t border-ink px-5 py-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={open}
+            className="border border-ink px-4 py-2 text-[11px] tracking-[0.22em] uppercase"
           >
-            {item.title}
-          </NavLink>
-        );
-      })}
-    </nav>
+            {country.name} ({country.currency} {country.symbol})
+          </button>
+          <button
+            type="button"
+            onClick={open}
+            className="border border-ink px-4 py-2 text-[11px] tracking-[0.22em] uppercase"
+          >
+            {language.name}
+          </button>
+        </div>
+
+        <p className="text-[11px] tracking-[0.22em] text-silver uppercase">
+          © 2026 VESTIGE. All rights reserved.
+        </p>
+      </div>
+    </footer>
   );
-}
-
-const FALLBACK_FOOTER_MENU = {
-  id: 'gid://shopify/Menu/199655620664',
-  items: [
-    {
-      id: 'gid://shopify/MenuItem/461633060920',
-      resourceId: 'gid://shopify/ShopPolicy/23358046264',
-      tags: [],
-      title: 'Privacy Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/privacy-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633093688',
-      resourceId: 'gid://shopify/ShopPolicy/23358013496',
-      tags: [],
-      title: 'Refund Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/refund-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633126456',
-      resourceId: 'gid://shopify/ShopPolicy/23358111800',
-      tags: [],
-      title: 'Shipping Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/shipping-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633159224',
-      resourceId: 'gid://shopify/ShopPolicy/23358079032',
-      tags: [],
-      title: 'Terms of Service',
-      type: 'SHOP_POLICY',
-      url: '/policies/terms-of-service',
-      items: [],
-    },
-  ],
-};
-
-function activeLinkStyle({
-  isActive,
-  isPending,
-}: {
-  isActive: boolean;
-  isPending: boolean;
-}) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'white',
-  };
 }

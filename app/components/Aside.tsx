@@ -1,11 +1,13 @@
 import {
   createContext,
   type ReactNode,
+  useCallback,
   useContext,
-  useEffect,
+  useId,
+  useMemo,
   useState,
 } from 'react';
-import {useId} from 'react';
+import {CloseButton, useOverlay} from '~/components/Overlay';
 
 type AsideType = 'search' | 'cart' | 'mobile' | 'closed';
 type AsideContextValue = {
@@ -15,61 +17,58 @@ type AsideContextValue = {
 };
 
 /**
- * A side bar component with Overlay
- * @example
- * ```jsx
- * <Aside type="search" heading="SEARCH">
- *  <input type="search" />
- *  ...
- * </Aside>
- * ```
+ * Slide-in panel used for the cart drawer, predictive search and the mobile
+ * menu. The cart enters from the right at 440px with a 1px black left border
+ * and no shadow; the mobile menu covers the screen.
  */
 export function Aside({
   children,
   heading,
   type,
 }: {
-  children?: React.ReactNode;
+  children?: ReactNode;
   type: AsideType;
-  heading: React.ReactNode;
+  heading: ReactNode;
 }) {
   const {type: activeType, close} = useAside();
   const expanded = type === activeType;
   const id = useId();
-  useEffect(() => {
-    const abortController = new AbortController();
+  const containerRef = useOverlay({open: expanded, onClose: close});
 
-    if (expanded) {
-      document.addEventListener(
-        'keydown',
-        function handler(event: KeyboardEvent) {
-          if (event.key === 'Escape') {
-            close();
-          }
-        },
-        {signal: abortController.signal},
-      );
-    }
-    return () => abortController.abort();
-  }, [close, expanded]);
+  if (!expanded) return null;
+
+  const isFullScreen = type === 'mobile';
 
   return (
     <div
-      aria-modal
-      className={`overlay ${expanded ? 'expanded' : ''}`}
+      className="fixed inset-0 z-[90] flex items-stretch justify-end"
       role="dialog"
+      aria-modal="true"
       aria-labelledby={id}
     >
-      <button className="close-outside" onClick={close} />
-      <aside>
-        <header>
-          <h3 id={id}>{heading}</h3>
-          <button className="close reset" onClick={close} aria-label="Close">
-            &times;
-          </button>
+      <button
+        type="button"
+        aria-label="Close"
+        tabIndex={-1}
+        onClick={close}
+        className="absolute inset-0 h-full w-full cursor-default bg-[rgba(0,0,0,0.62)]"
+      />
+
+      <div
+        ref={containerRef}
+        className={`relative z-10 flex h-full flex-col border-l border-ink bg-paper ${
+          isFullScreen ? 'w-full' : 'w-full max-w-[440px]'
+        }`}
+      >
+        <header className="flex items-center justify-between border-b border-ink px-6 py-5">
+          <h3 id={id} className="text-[13px] tracking-[0.3em] uppercase">
+            {heading}
+          </h3>
+          <CloseButton onClose={close} />
         </header>
-        <main>{children}</main>
-      </aside>
+
+        <div className="flex flex-1 flex-col overflow-y-auto">{children}</div>
+      </div>
     </div>
   );
 }
@@ -79,16 +78,16 @@ const AsideContext = createContext<AsideContextValue | null>(null);
 Aside.Provider = function AsideProvider({children}: {children: ReactNode}) {
   const [type, setType] = useState<AsideType>('closed');
 
+  const close = useCallback(() => setType('closed'), []);
+  const open = useCallback((mode: AsideType) => setType(mode), []);
+
+  const value = useMemo(
+    () => ({type, open, close}),
+    [type, open, close],
+  );
+
   return (
-    <AsideContext.Provider
-      value={{
-        type,
-        open: setType,
-        close: () => setType('closed'),
-      }}
-    >
-      {children}
-    </AsideContext.Provider>
+    <AsideContext.Provider value={value}>{children}</AsideContext.Provider>
   );
 };
 

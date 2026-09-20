@@ -101,17 +101,38 @@ export async function loader(args: Route.LoaderArgs) {
 async function loadCriticalData({context}: Route.LoaderArgs) {
   const {storefront} = context;
 
-  const [header] = await Promise.all([
+  const [header, localization] = await Promise.all([
     storefront.query(HEADER_QUERY, {
       cache: storefront.CacheLong(),
       variables: {
         headerMenuHandle: 'main-menu', // Adjust to your header menu handle
       },
     }),
-    // Add other queries here, so that they are loaded in parallel
+    // Markets available to the region modal. A store without markets
+    // configured falls back to the placeholder list in ~/lib/vestige.
+    storefront
+      .query(LOCALIZATION_QUERY, {cache: storefront.CacheLong()})
+      .catch((error: Error) => {
+        console.error(error);
+        return null;
+      }),
   ]);
 
-  return {header};
+  const countries =
+    localization?.localization?.availableCountries
+      ?.filter((country) => country.name)
+      .map((country) => ({
+        isoCode: country.isoCode,
+        name: country.name,
+        currency: country.currency.isoCode,
+        symbol: country.currency.symbol,
+      })) ?? null;
+
+  return {
+    header,
+    countries: countries?.length ? countries : null,
+    selectedCountry: storefront.i18n.country as string,
+  };
 }
 
 /**
@@ -141,6 +162,21 @@ function loadDeferredData({context}: Route.LoaderArgs) {
     footer,
   };
 }
+
+const LOCALIZATION_QUERY = `#graphql
+  query RootLocalization {
+    localization {
+      availableCountries {
+        isoCode
+        name
+        currency {
+          isoCode
+          symbol
+        }
+      }
+    }
+  }
+` as const;
 
 export function Layout({children}: {children?: React.ReactNode}) {
   const nonce = useNonce();

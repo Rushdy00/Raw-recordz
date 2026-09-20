@@ -1,6 +1,152 @@
 /**
- * Configure Tailwind v4 in this file using CSS variables and directives:
- * https://tailwindcss.com/docs/v4-beta#css-first-configuration
+ * VESTIGE design system.
+ *
+ * Tailwind v4 is configured CSS-first via `@theme` rather than a
+ * `tailwind.config.js`. The tokens below are the whole art direction:
+ * black on white, hairline dividers, square corners, no shadows.
  */
 
 @import 'tailwindcss';
+
+@theme {
+  /* Palette */
+  --color-ink: #000000;
+  --color-paper: #ffffff;
+  --color-silver: #8a8a8d;
+  --color-shell: #efefef;
+  --color-hairline: #e2e2e2;
+
+  /* Type */
+  --font-display: 'Anton', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* Tracking scale used by the uppercase UI labels */
+  --tracking-ui: 0.14em;
+  --tracking-wide-ui: 0.22em;
+  --tracking-label: 0.3em;
+  --tracking-display: 0.42em;
+  --tracking-eyebrow: 0.62em;
+  --tracking-button: 0.24em;
+  --tracking-nav: 0.16em;
+  --tracking-announce: 0.28em;
+  --tracking-mega: 0.34em;
+
+  /* Square corners everywhere. The Rewards pill opts back in explicitly. */
+  --radius-none: 0;
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-4xl: 0;
+
+  /* No shadows anywhere. */
+  --shadow-2xs: none;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+  --shadow-2xl: none;
+  --shadow-inner: none;
+}
+
+/*
+ * Anton is the only display face. Loaded with `display=swap` and a real
+ * fallback stack so the hero never renders invisible text.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  /*
+   * The scaffold rounds images by default; the art direction does not.
+   * Every corner in the storefront is square except the two elements that
+   * opt back in explicitly: the Rewards pill and the hero's circular dots.
+   */
+  *:not(.is-pill, .is-round),
+  *::before,
+  *::after {
+    border-radius: 0;
+  }
+
+  .is-pill {
+    border-radius: 9999px;
+  }
+
+  .is-round {
+    border-radius: 50%;
+  }
+
+  /* Focus is always a 1px black outline, never the rounded browser default. */
+  :focus-visible {
+    outline: 1px solid var(--color-ink);
+    outline-offset: 2px;
+    border-radius: 0;
+  }
+
+  /* Dark campaign imagery needs a white ring to stay visible. */
+  .on-dark :focus-visible {
+    outline: 1px solid var(--color-paper);
+  }
+}
+
+@layer components {
+  /* The solid black call to action used in cards, the PDP and overlays. */
+  .btn-ink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    width: 100%;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-size: 13px;
+    letter-spacing: var(--tracking-button);
+    text-transform: uppercase;
+    border: 1px solid var(--color-ink);
+  }
+
+  .btn-ink:disabled {
+    background: var(--color-silver);
+    border-color: var(--color-silver);
+    cursor: not-allowed;
+  }
+
+  /* Uppercase micro-label shared by eyebrows, nav rows and section titles. */
+  .label-ui {
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: var(--tracking-label);
+  }
+
+  /*
+   * Product grids are flush to the viewport and divided only by hairlines:
+   * a black grid background showing through 1px gaps between white cells.
+   */
+  .hairline-grid {
+    display: grid;
+    gap: 1px;
+    background: var(--color-ink);
+    border-top: 1px solid var(--color-ink);
+    border-bottom: 1px solid var(--color-ink);
+  }
+}

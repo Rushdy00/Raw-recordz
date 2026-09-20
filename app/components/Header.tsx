@@ -1,12 +1,16 @@
-import {Suspense} from 'react';
-import {Await, NavLink, useAsyncValue} from 'react-router';
-import {
-  type CartViewPayload,
-  useAnalytics,
-  useOptimisticCart,
-} from '@shopify/hydrogen';
-import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
+import {Suspense, useEffect, useRef, useState} from 'react';
+import {Await, Link, NavLink, useLocation} from 'react-router';
+import {useOptimisticCart} from '@shopify/hydrogen';
+import type {CartApiQueryFragment, HeaderQuery} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
+import {
+  AccountIcon,
+  BagIcon,
+  MenuIcon,
+  Monogram,
+  SearchIcon,
+} from '~/components/Icons';
+import {ANNOUNCEMENT, NAV_ROWS, type NavItem} from '~/lib/vestige';
 
 interface HeaderProps {
   header: HeaderQuery;
@@ -15,217 +19,280 @@ interface HeaderProps {
   publicStoreDomain: string;
 }
 
-type Viewport = 'desktop' | 'mobile';
+export function Header({header, cart, isLoggedIn}: HeaderProps) {
+  const {open} = useAside();
+  const [openPanel, setOpenPanel] = useState<string | null>(null);
+  const location = useLocation();
+  const headerRef = useRef<HTMLElement | null>(null);
 
-export function Header({
-  header,
-  isLoggedIn,
-  cart,
-  publicStoreDomain,
-}: HeaderProps) {
-  const {shop, menu} = header;
-  return (
-    <header className="header">
-      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-        <strong>{shop.name}</strong>
-      </NavLink>
-      <HeaderMenu
-        menu={menu}
-        viewport="desktop"
-        primaryDomainUrl={header.shop.primaryDomain.url}
-        publicStoreDomain={publicStoreDomain}
-      />
-      <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
-    </header>
+  // Close the mega panel whenever the route changes.
+  useEffect(() => {
+    setOpenPanel(null);
+  }, [location.pathname]);
+
+  // Close it on Escape, and when focus or the pointer leaves the header.
+  useEffect(() => {
+    if (!openPanel) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setOpenPanel(null);
+    }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [openPanel]);
+
+  const activePanel = NAV_ROWS.flat().find(
+    (item) => item.title === openPanel && item.panel,
   );
-}
-
-export function HeaderMenu({
-  menu,
-  primaryDomainUrl,
-  viewport,
-  publicStoreDomain,
-}: {
-  menu: HeaderProps['header']['menu'];
-  primaryDomainUrl: HeaderProps['header']['shop']['primaryDomain']['url'];
-  viewport: Viewport;
-  publicStoreDomain: HeaderProps['publicStoreDomain'];
-}) {
-  const className = `header-menu-${viewport}`;
-  const {close} = useAside();
 
   return (
-    <nav className={className} role="navigation">
-      {viewport === 'mobile' && (
-        <NavLink
-          end
-          onClick={close}
-          prefetch="intent"
-          style={activeLinkStyle}
-          to="/"
-        >
-          Home
-        </NavLink>
-      )}
-      {(menu || FALLBACK_HEADER_MENU).items.map((item) => {
-        if (!item.url) return null;
+    <>
+      {/* Announcement bar */}
+      <div className="flex h-[38px] items-center justify-center border-b border-ink bg-paper px-4 text-center text-[11px] tracking-[0.28em] uppercase">
+        {ANNOUNCEMENT}
+      </div>
 
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        return (
-          <NavLink
-            className="header-menu-item"
-            end
-            key={item.id}
-            onClick={close}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
+      <header
+        ref={headerRef}
+        onMouseLeave={() => setOpenPanel(null)}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+            setOpenPanel(null);
+          }
+        }}
+        className="sticky top-0 z-50 border-b border-ink bg-paper"
+      >
+        <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 px-4 py-4 lg:px-8 lg:py-5">
+          {/* Left — monogram + wordmark */}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => open('mobile')}
+              aria-label="Open menu"
+              className="flex h-8 w-8 items-center justify-center lg:hidden"
+            >
+              <MenuIcon />
+            </button>
+            <NavLink
+              to="/"
+              prefetch="intent"
+              end
+              className="flex items-center gap-3"
+              aria-label={`${header.shop.name} — home`}
+            >
+              <Monogram />
+              <span className="text-[15px] tracking-[0.34em] uppercase">
+                VESTIGE
+              </span>
+            </NavLink>
+          </div>
+
+          {/* Center — three stacked nav rows */}
+          <nav
+            aria-label="Main"
+            className="hidden justify-center lg:flex lg:flex-col lg:items-center lg:gap-[6px]"
           >
-            {item.title}
-          </NavLink>
-        );
-      })}
-    </nav>
+            {NAV_ROWS.map((row, rowIndex) => (
+              <NavRow
+                key={rowIndex}
+                row={row}
+                openPanel={openPanel}
+                setOpenPanel={setOpenPanel}
+              />
+            ))}
+          </nav>
+          <span className="lg:hidden" />
+
+          {/* Right — account, search, cart */}
+          <div className="flex items-center justify-end gap-4 lg:gap-5">
+            <Suspense
+              fallback={
+                <Link to="/account" aria-label="Account">
+                  <AccountIcon />
+                </Link>
+              }
+            >
+              <Await
+                resolve={isLoggedIn}
+                errorElement={
+                  <Link to="/account" aria-label="Account">
+                    <AccountIcon />
+                  </Link>
+                }
+              >
+                {(loggedIn) => (
+                  <Link
+                    to="/account"
+                    prefetch="intent"
+                    aria-label={loggedIn ? 'Account' : 'Sign in'}
+                  >
+                    <AccountIcon />
+                  </Link>
+                )}
+              </Await>
+            </Suspense>
+
+            <button
+              type="button"
+              onClick={() => open('search')}
+              aria-label="Search"
+              className="flex items-center"
+            >
+              <SearchIcon />
+            </button>
+
+            <CartToggle cart={cart} />
+          </div>
+        </div>
+
+        {/* Full-width mega panel */}
+        {activePanel?.panel ? (
+          <div
+            className="hidden border-b border-ink bg-paper lg:block"
+            onMouseEnter={() => setOpenPanel(activePanel.title)}
+          >
+            <div className="mx-auto grid max-w-[1200px] grid-cols-2 gap-x-12 gap-y-4 px-8 py-10 md:grid-cols-4">
+              {activePanel.panel.map((link) => (
+                <Link
+                  key={link.title}
+                  to={link.url}
+                  prefetch="intent"
+                  className="text-[12px] tracking-[0.16em] uppercase hover:underline"
+                >
+                  {link.title}
+                </Link>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </header>
+    </>
   );
 }
 
-function HeaderCtas({
-  isLoggedIn,
-  cart,
-}: Pick<HeaderProps, 'isLoggedIn' | 'cart'>) {
+/** One dot-separated row of navigation entries. */
+function NavRow({
+  row,
+  openPanel,
+  setOpenPanel,
+}: {
+  row: NavItem[];
+  openPanel: string | null;
+  setOpenPanel: (value: string | null) => void;
+}) {
   return (
-    <nav className="header-ctas" role="navigation">
-      <HeaderMenuMobileToggle />
-      <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
-        <Suspense fallback="Sign in">
-          <Await resolve={isLoggedIn} errorElement="Sign in">
-            {(isLoggedIn) => (isLoggedIn ? 'Account' : 'Sign in')}
-          </Await>
-        </Suspense>
-      </NavLink>
-      <SearchToggle />
-      <CartToggle cart={cart} />
-    </nav>
+    <div className="flex items-center gap-2 text-[12px] tracking-[0.16em] uppercase">
+      {row.map((item, index) => (
+        <span key={item.title} className="flex items-center gap-2">
+          {index > 0 ? (
+            <span aria-hidden="true" className="text-silver">
+              ·
+            </span>
+          ) : null}
+          {item.panel ? (
+            <button
+              type="button"
+              aria-expanded={openPanel === item.title}
+              aria-haspopup="true"
+              onMouseEnter={() => setOpenPanel(item.title)}
+              onFocus={() => setOpenPanel(item.title)}
+              onClick={() =>
+                setOpenPanel(openPanel === item.title ? null : item.title)
+              }
+              className="flex items-center gap-1 uppercase"
+            >
+              {item.title}
+              <span aria-hidden="true" className="text-[9px]">
+                &#9662;
+              </span>
+            </button>
+          ) : (
+            <NavLink
+              to={item.url}
+              prefetch="intent"
+              onMouseEnter={() => setOpenPanel(null)}
+              onFocus={() => setOpenPanel(null)}
+              className={({isActive}) => (isActive ? 'underline' : undefined)}
+            >
+              {item.title}
+            </NavLink>
+          )}
+        </span>
+      ))}
+    </div>
   );
 }
 
-function HeaderMenuMobileToggle() {
-  const {open} = useAside();
+/** Cart icon with a live item count. */
+function CartToggle({cart}: {cart: HeaderProps['cart']}) {
   return (
-    <button
-      className="header-menu-mobile-toggle reset"
-      onClick={() => open('mobile')}
-    >
-      <h3>☰</h3>
-    </button>
-  );
-}
-
-function SearchToggle() {
-  const {open} = useAside();
-  return (
-    <button className="reset" onClick={() => open('search')}>
-      Search
-    </button>
-  );
-}
-
-function CartBadge({count}: {count: number}) {
-  const {open} = useAside();
-  const {publish, shop, cart, prevCart} = useAnalytics();
-
-  return (
-    <a
-      href="/cart"
-      onClick={(e) => {
-        e.preventDefault();
-        open('cart');
-        publish('cart_viewed', {
-          cart,
-          prevCart,
-          shop,
-          url: window.location.href || '',
-        } as CartViewPayload);
-      }}
-    >
-      Cart <span aria-label={`(items: ${count})`}>{count}</span>
-    </a>
-  );
-}
-
-function CartToggle({cart}: Pick<HeaderProps, 'cart'>) {
-  return (
-    <Suspense fallback={<CartBadge count={0} />}>
-      <Await resolve={cart}>
-        <CartBanner />
+    <Suspense fallback={<CartBadge count={null} />}>
+      <Await resolve={cart} errorElement={<CartBadge count={null} />}>
+        {(resolved) => <CartBadgeWithCart cart={resolved} />}
       </Await>
     </Suspense>
   );
 }
 
-function CartBanner() {
-  const originalCart = useAsyncValue() as CartApiQueryFragment | null;
-  const cart = useOptimisticCart(originalCart);
-  return <CartBadge count={cart?.totalQuantity ?? 0} />;
+function CartBadgeWithCart({cart}: {cart: CartApiQueryFragment | null}) {
+  const optimisticCart = useOptimisticCart(cart);
+  return <CartBadge count={optimisticCart?.totalQuantity ?? 0} />;
 }
 
-const FALLBACK_HEADER_MENU = {
-  id: 'gid://shopify/Menu/199655587896',
-  items: [
-    {
-      id: 'gid://shopify/MenuItem/461609500728',
-      resourceId: null,
-      tags: [],
-      title: 'Collections',
-      type: 'HTTP',
-      url: '/collections',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461609533496',
-      resourceId: null,
-      tags: [],
-      title: 'Blog',
-      type: 'HTTP',
-      url: '/blogs/journal',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461609566264',
-      resourceId: null,
-      tags: [],
-      title: 'Policies',
-      type: 'HTTP',
-      url: '/policies',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461609599032',
-      resourceId: 'gid://shopify/Page/92591030328',
-      tags: [],
-      title: 'About',
-      type: 'PAGE',
-      url: '/pages/about',
-      items: [],
-    },
-  ],
-};
+function CartBadge({count}: {count: number | null}) {
+  const {open} = useAside();
+  const quantity = count ?? 0;
 
-function activeLinkStyle({
-  isActive,
-  isPending,
-}: {
-  isActive: boolean;
-  isPending: boolean;
-}) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'black',
-  };
+  return (
+    <button
+      type="button"
+      onClick={() => open('cart')}
+      aria-label={`Open cart, ${quantity} ${quantity === 1 ? 'item' : 'items'}`}
+      className="flex items-center gap-2"
+    >
+      <BagIcon />
+      <span className="text-[11px] tracking-[0.14em] tabular-nums">
+        {quantity}
+      </span>
+    </button>
+  );
+}
+
+/**
+ * The full-screen mobile menu contents, rendered inside the mobile Aside.
+ */
+export function HeaderMenu() {
+  const {close} = useAside();
+
+  return (
+    <nav aria-label="Mobile" className="flex flex-col">
+      {NAV_ROWS.flat().map((item) => (
+        <div key={item.title} className="border-b border-ink">
+          <Link
+            to={item.url}
+            prefetch="intent"
+            onClick={close}
+            className="block px-6 py-5 text-[18px] tracking-[0.22em] uppercase"
+          >
+            {item.title}
+          </Link>
+          {item.panel ? (
+            <ul className="pb-4">
+              {item.panel.map((link) => (
+                <li key={link.title}>
+                  <Link
+                    to={link.url}
+                    prefetch="intent"
+                    onClick={close}
+                    className="block px-6 py-2 text-[12px] tracking-[0.16em] text-silver uppercase"
+                  >
+                    {link.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      ))}
+    </nav>
+  );
 }

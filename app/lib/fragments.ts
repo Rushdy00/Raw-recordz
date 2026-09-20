@@ -240,3 +240,143 @@ export const FOOTER_QUERY = `#graphql
   }
   ${MENU_FRAGMENT}
 ` as const;
+
+/*
+ * ---------------------------------------------------------------------------
+ * VESTIGE
+ * ---------------------------------------------------------------------------
+ */
+
+/**
+ * The card used by every product grid: homepage drop, collection and search.
+ * Kept deliberately small — grids only need image, title and price.
+ */
+export const VESTIGE_PRODUCT_CARD_FRAGMENT = `#graphql
+  fragment VestigeProductCard on Product {
+    id
+    title
+    handle
+    featuredImage {
+      id
+      url
+      altText
+      width
+      height
+    }
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    compareAtPriceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    selectedOrFirstAvailableVariant(ignoreUnknownOptions: true, caseInsensitiveMatch: true) {
+      id
+      availableForSale
+    }
+  }
+` as const;
+
+/**
+ * Homepage drop section. Reads the `2026fw-drop-1` collection; the route falls
+ * back to the newest products when a store has not created that collection yet.
+ */
+export const DROP_COLLECTION_QUERY = `#graphql
+  query DropCollection(
+    $country: CountryCode
+    $language: LanguageCode
+    $handle: String!
+    $first: Int!
+  ) @inContext(country: $country, language: $language) {
+    collection(handle: $handle) {
+      id
+      title
+      handle
+      description
+      products(first: $first) {
+        nodes {
+          ...VestigeProductCard
+        }
+      }
+    }
+  }
+  ${VESTIGE_PRODUCT_CARD_FRAGMENT}
+` as const;
+
+/** Fallback for stores without the drop collection: newest products. */
+export const DROP_FALLBACK_QUERY = `#graphql
+  query DropFallback(
+    $country: CountryCode
+    $language: LanguageCode
+    $first: Int!
+  ) @inContext(country: $country, language: $language) {
+    products(first: $first, sortKey: UPDATED_AT, reverse: true) {
+      nodes {
+        ...VestigeProductCard
+      }
+    }
+  }
+  ${VESTIGE_PRODUCT_CARD_FRAGMENT}
+` as const;
+
+/**
+ * Hero slideshow, driven by a `hero_slides` metaobject with fields:
+ * image, eyebrow, headline, copy_1..copy_4 and link.
+ */
+export const HERO_SLIDES_QUERY = `#graphql
+  query HeroSlides(
+    $country: CountryCode
+    $language: LanguageCode
+    $first: Int!
+  ) @inContext(country: $country, language: $language) {
+    metaobjects(type: "hero_slides", first: $first) {
+      nodes {
+        id
+        handle
+        fields {
+          key
+          value
+          reference {
+            ... on MediaImage {
+              image {
+                id
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+` as const;
+
+/**
+ * Season concept statements, stored as shop-level metafields in the
+ * `season` namespace.
+ */
+export const SEASON_METAFIELDS_QUERY = `#graphql
+  query SeasonMetafields(
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    shop {
+      core: metafield(namespace: "season", key: "core") {
+        value
+      }
+      philosophy: metafield(namespace: "season", key: "philosophy") {
+        value
+      }
+      designPrinciple: metafield(namespace: "season", key: "design_principle") {
+        value
+      }
+    }
+  }
+` as const;
