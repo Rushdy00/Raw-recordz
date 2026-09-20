@@ -150,10 +150,15 @@ export function ProductCard({
         </div>
       </div>
 
-      {/* Action row: variant selector, then the black add-to-cart bar. */}
-      <div className="mt-auto">
+      {/*
+        Action row. Selector and black bar sit side by side on one line: the
+        selector on the left in its own hairline box with the chevron divided
+        off, the bar on the right carrying price and label. Products with a
+        single variant give the whole row to the bar.
+      */}
+      <div className="card-actions mt-auto flex items-stretch border-t border-ink">
         {hasChoice ? (
-          <div className="relative border-t border-ink">
+          <div className="relative flex w-[45%] shrink-0 items-stretch border-r border-ink">
             <label htmlFor={selectId} className="sr-only">
               Select a variant of {product.title}
             </label>
@@ -161,7 +166,7 @@ export function ProductCard({
               id={selectId}
               value={selected?.id ?? ''}
               onChange={(event) => setSelectedId(event.target.value)}
-              className="w-full appearance-none bg-paper py-4 pr-12 pl-5 text-[12px] tracking-[0.14em] uppercase lg:pl-7"
+              className="h-[56px] w-full appearance-none bg-paper pr-12 pl-4 text-left text-[14px] lg:pl-5"
             >
               {variants.map((variant) => (
                 <option
@@ -174,12 +179,12 @@ export function ProductCard({
                 </option>
               ))}
             </select>
-            {/* Square chevron, boxed off by a hairline like the reference. */}
+            {/* Chevron, boxed off by a hairline as in the reference. */}
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 right-0 flex w-12 items-center justify-center border-l border-ink text-[13px] leading-none"
+              className="pointer-events-none absolute inset-y-0 right-0 flex w-11 items-center justify-center border-l border-ink text-[11px] leading-none"
             >
-              &#9662;
+              &#9660;
             </span>
           </div>
         ) : null}
@@ -207,14 +212,12 @@ export function ProductCard({
                 ]
               : []
           }
-          className="btn-ink flex w-full items-center justify-between gap-4 px-5 lg:px-7"
+          className="btn-card px-4"
         >
           <span className="tabular-nums">
             <Money data={price} />
           </span>
-          <span className="lg:pr-2">
-            {soldOut ? 'Sold out' : 'Add to cart'}
-          </span>
+          <span>{soldOut ? 'Sold out' : 'ADD TO CART'}</span>
         </AddToCartButton>
       </div>
     </article>

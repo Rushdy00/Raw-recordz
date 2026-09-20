@@ -97,15 +97,33 @@ const ctaStyle = await cta.evaluate((el) => {
   return {bg: s.backgroundColor, color: s.color, fs: s.fontSize,
           ls: (parseFloat(s.letterSpacing) / parseFloat(s.fontSize)).toFixed(2)};
 });
-ok('CTA 50px tall', Math.round(ctaBox.height) === 50, `${ctaBox.height}px`);
+// The card's bar follows the storefront reference rather than the generic
+// button spec: it is 56px tall, 14px, and shares one row with the variant
+// selector instead of filling the card width.
+ok('card CTA 56px tall', Math.round(ctaBox.height) === 56, `${ctaBox.height}px`);
 ok('CTA black bg / white text',
    ctaStyle.bg === 'rgb(0, 0, 0)' && ctaStyle.color === 'rgb(255, 255, 255)',
    JSON.stringify(ctaStyle));
-ok('CTA 13px / ~0.24em', ctaStyle.fs === '13px' && Math.abs(ctaStyle.ls - 0.24) < 0.02,
-   JSON.stringify(ctaStyle));
-ok('CTA full width in card', Math.round(ctaBox.width) === Math.round(
-  (await page.locator('article').first().boundingBox()).width) - 56 ||
-  ctaBox.width > 600, `${ctaBox.width}px`);
+ok('card CTA 14px', ctaStyle.fs === '14px', JSON.stringify(ctaStyle));
+
+// The row is selector + bar, flush edge to edge with no white gap.
+const rowFit = await page.locator('.hairline-grid article').first().evaluate((art) => {
+  const row = art.querySelector('.card-actions');
+  const sel = row.querySelector('select');
+  const btn = row.querySelector('button[type="submit"]');
+  const rowR = row.getBoundingClientRect();
+  const selR = sel?.getBoundingClientRect();
+  const btnR = btn.getBoundingClientRect();
+  return {
+    row: Math.round(rowR.width),
+    covered: Math.round((selR ? selR.width : 0) + btnR.width),
+    sameLine: !selR || Math.abs(selR.top - btnR.top) < 2,
+    barRightFlush: Math.abs(btnR.right - rowR.right) < 2,
+  };
+});
+ok('selector and bar share one row', rowFit.sameLine, JSON.stringify(rowFit));
+ok('bar reaches the card edge (no white gap)', rowFit.barRightFlush,
+   JSON.stringify(rowFit));
 
 // Season block.
 ok('season heading silver', (await page.locator('#season-concept')

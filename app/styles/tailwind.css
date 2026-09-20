@@ -148,6 +148,44 @@
     cursor: not-allowed;
   }
 
+  /*
+   * The product card's add-to-cart bar. It shares the black ground with
+   * .btn-ink but sits inside a flex row beside the variant selector, so it
+   * flexes rather than filling the width and carries no border of its own —
+   * the row's hairlines already divide it.
+   */
+  /*
+   * CartForm renders a <form> around the button and takes no className, so
+   * that form — not the button — is the flex child of the action row. It is
+   * stretched from the row here; otherwise the black bar collapses to its
+   * text width and leaves white space beside it.
+   */
+  .card-actions > form {
+    display: flex;
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+
+  .btn-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 12px;
+    height: 56px;
+    flex: 1 1 0%;
+    min-width: 0;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-size: 14px;
+    letter-spacing: 0;
+    border: none;
+  }
+
+  .btn-card:disabled {
+    background: var(--color-silver);
+    cursor: not-allowed;
+  }
+
   /* Uppercase micro-label shared by eyebrows, nav rows and section titles. */
   .label-ui {
     text-transform: uppercase;
