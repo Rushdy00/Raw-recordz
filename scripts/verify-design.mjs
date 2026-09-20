@@ -130,8 +130,17 @@ ok('mega panel opens on hover', await page.locator('header nav[aria-label="Main"
   .isVisible() && (await page.locator('header a', {hasText: 'OUTERWEAR'}).count()) > 0);
 
 // ---------- Cart drawer ----------
+// Move the pointer off the nav first: the mega panel opened by the hover
+// check above otherwise stays open over the grid.
+await page.mouse.move(1430, 880);
+await page.waitForTimeout(300);
+
 await page.locator('article button[type="submit"]').first().click();
-await page.waitForTimeout(3000);
+// Wait for the line to actually arrive rather than a fixed delay, so a slow
+// cold compile cannot race the focus assertions below.
+await page.locator('[role="dialog"] [data-overlay-panel]').waitFor({timeout: 20000});
+await page.locator('[role="dialog"] li').first().waitFor({timeout: 20000});
+await page.waitForTimeout(500);
 
 const dlg = page.locator('[role="dialog"]').first();
 ok('cart drawer opens', await dlg.isVisible());
