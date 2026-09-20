@@ -49,37 +49,105 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
     return <CartEmpty layout={layout} />;
   }
 
+  const lines = (
+    <ul
+      aria-labelledby={`cart-lines-${layout}`}
+      className="divide-y divide-[#E2E2E2]"
+    >
+      {(cart?.lines?.nodes ?? []).map((line) => {
+        // Child lines render nested under their parent, not at the root.
+        if ('parentRelationship' in line && line.parentRelationship?.parent) {
+          return null;
+        }
+        return (
+          <CartLineItem
+            key={line.id}
+            line={line}
+            layout={layout}
+            childrenMap={childrenMap}
+          />
+        );
+      })}
+    </ul>
+  );
+
   return (
     <section
-      className="flex h-full flex-col"
+      className="flex min-h-0 flex-col"
       aria-label={layout === 'page' ? 'Cart page' : 'Cart drawer'}
     >
+      <FreeShippingProgress
+        subtotal={Number(cart?.cost?.subtotalAmount?.amount ?? 0)}
+        currencyCode={cart?.cost?.subtotalAmount?.currencyCode}
+      />
+
       <p id={`cart-lines-${layout}`} className="sr-only">
         Line items
       </p>
 
-      <ul
-        aria-labelledby={`cart-lines-${layout}`}
-        className="flex-1 overflow-y-auto"
-      >
-        {(cart?.lines?.nodes ?? []).map((line) => {
-          // Child lines render nested under their parent, not at the root.
-          if ('parentRelationship' in line && line.parentRelationship?.parent) {
-            return null;
-          }
-          return (
-            <CartLineItem
-              key={line.id}
-              line={line}
-              layout={layout}
-              childrenMap={childrenMap}
-            />
-          );
-        })}
-      </ul>
+      {/*
+        Line items on the left, summary on the right. The summary keeps its
+        own border so the two columns read as separate panels, and stacks
+        beneath the items on narrow screens.
+      */}
+      <div className="flex min-h-0 flex-col lg:flex-row lg:items-stretch">
+        <div className="min-w-0 flex-1 overflow-y-auto">{lines}</div>
 
-      <CartSummary cart={cart} layout={layout} />
+        <div className="border-t border-ink lg:w-[420px] lg:shrink-0 lg:border-t-0 lg:border-l">
+          <CartSummary cart={cart} layout={layout} />
+        </div>
+      </div>
     </section>
+  );
+}
+
+/** Free shipping threshold, in the cart's own currency. */
+const FREE_SHIPPING_MINIMUM = 300;
+
+/**
+ * Progress towards free shipping. Once the threshold is met it congratulates
+ * rather than disappearing, so the bar does not flicker in and out as
+ * quantities change.
+ */
+function FreeShippingProgress({
+  subtotal,
+  currencyCode,
+}: {
+  subtotal: number;
+  currencyCode?: string;
+}) {
+  const remaining = Math.max(0, FREE_SHIPPING_MINIMUM - subtotal);
+  const pct = Math.min(100, (subtotal / FREE_SHIPPING_MINIMUM) * 100);
+  const formatted = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currencyCode || 'USD',
+    maximumFractionDigits: 2,
+  }).format(remaining);
+
+  return (
+    <div className="border-b border-ink px-5 py-3 text-center lg:px-6">
+      <p className="text-[13px]">
+        {remaining > 0 ? (
+          <>
+            Spend <strong className="font-bold">{formatted}</strong> more for
+            free shipping!
+          </>
+        ) : (
+          <>You have earned free shipping.</>
+        )}
+      </p>
+
+      <div
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(pct)}
+        aria-label="Progress towards free shipping"
+        className="mx-auto mt-2 h-[6px] w-full max-w-[220px] bg-[#D9D9D9]"
+      >
+        <div className="h-full bg-ink" style={{width: `${pct}%`}} />
+      </div>
+    </div>
   );
 }
 

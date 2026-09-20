@@ -208,10 +208,39 @@ ok('cart drawer opens', await dlg.isVisible());
 
 const panel = dlg.locator('[data-overlay-panel]');
 const panelBox = await panel.boundingBox();
-ok('drawer 440px wide', Math.abs(panelBox.width - 440) <= 1, `${panelBox.width}px`);
 
-const borderLeft = await panel.evaluate((el) => getComputedStyle(el).borderLeftWidth);
-ok('drawer has 1px left border', borderLeft === '1px', borderLeft);
+// The cart drops from the top across the full width so its two columns fit.
+ok('cart drawer spans the viewport', Math.abs(panelBox.width - 1440) <= 1,
+   `${panelBox.width}px`);
+ok('cart drawer is anchored to the top', Math.round(panelBox.y) === 0,
+   `y=${panelBox.y}`);
+
+const borderBottom = await panel.evaluate((el) => getComputedStyle(el).borderBottomWidth);
+ok('drawer has a 1px bottom edge', borderBottom === '1px', borderBottom);
+
+// Free shipping progress, and the two-column split.
+ok('free shipping progress shown',
+   (await dlg.locator('[role="progressbar"]').count()) === 1);
+
+// The summary renders once the cart resolves; wait for it rather than racing.
+await page.locator('[role="dialog"] a[data-testid^="checkout-"]')
+  .waitFor({timeout: 20000});
+
+const columns = await page.evaluate(() => {
+  const dialog = document.querySelector('[role="dialog"]');
+  const line = dialog?.querySelector('li');
+  const checkout = dialog?.querySelector('a[data-testid]');
+  if (!line || !checkout) {
+    return {found: false, li: !!line, checkout: !!checkout};
+  }
+  const l = line.getBoundingClientRect();
+  const c = checkout.getBoundingClientRect();
+  // The summary column starts to the right of the line item column.
+  return {found: true, sideBySide: c.left > l.left, cLeft: Math.round(c.left),
+          lLeft: Math.round(l.left)};
+});
+ok('items and summary sit side by side', columns?.sideBySide === true,
+   JSON.stringify(columns));
 
 ok('cart heading shows count',
    /CART \(\d+\)/.test(await dlg.locator('h3').first().textContent()),

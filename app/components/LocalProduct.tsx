@@ -105,6 +105,12 @@ export function LocalProduct({product}: {product: LocalProductData}) {
                         {
                           merchandiseId: selected.id,
                           quantity: 1,
+                          // See ProductCard: carries VESTIGE's identity onto
+                          // a line backed by a borrowed Storefront variant.
+                          attributes: [
+                            {key: '_vestige_title', value: product.title},
+                            {key: '_vestige_image', value: product.imageUrl},
+                          ],
                           selectedVariant: {
                             ...selected,
                             product: {

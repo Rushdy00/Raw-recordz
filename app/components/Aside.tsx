@@ -17,9 +17,11 @@ type AsideContextValue = {
 };
 
 /**
- * Slide-in panel used for the cart drawer, predictive search and the mobile
- * menu. The cart enters from the right at 440px with a 1px black left border
- * and no shadow; the mobile menu covers the screen.
+ * Panel used for the cart drawer, predictive search and the mobile menu.
+ *
+ * The cart drops in from the top across the full width, so its two columns
+ * (line items and summary) sit side by side; search slides in from the right
+ * at 440px, and the mobile menu covers the screen.
  */
 export function Aside({
   children,
@@ -38,10 +40,13 @@ export function Aside({
   if (!expanded) return null;
 
   const isFullScreen = type === 'mobile';
+  const isTopDrawer = type === 'cart';
 
   return (
     <div
-      className="fixed inset-0 z-[90] flex items-stretch justify-end"
+      className={`fixed inset-0 z-[90] flex ${
+        isTopDrawer ? 'items-start justify-center' : 'items-stretch justify-end'
+      }`}
       role="dialog"
       aria-modal="true"
       aria-labelledby={id}
@@ -57,11 +62,15 @@ export function Aside({
       <div
         ref={containerRef}
         data-overlay-panel
-        className={`relative z-10 flex h-full flex-col border-l border-ink bg-paper ${
-          isFullScreen ? 'w-full' : 'w-full max-w-[440px]'
-        }`}
+        className={
+          isTopDrawer
+            ? 'relative z-10 flex max-h-full w-full flex-col border-b border-ink bg-paper'
+            : `relative z-10 flex h-full flex-col border-l border-ink bg-paper ${
+                isFullScreen ? 'w-full' : 'w-full max-w-[440px]'
+              }`
+        }
       >
-        <header className="flex items-center justify-between border-b border-ink px-6 py-5">
+        <header className="flex items-center justify-between border-b border-ink px-5 py-4 lg:px-6 lg:py-5">
           <h3 id={id} className="text-[13px] tracking-[0.3em] uppercase">
             {heading}
           </h3>

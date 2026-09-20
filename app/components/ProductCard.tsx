@@ -198,6 +198,20 @@ export function ProductCard({
                   {
                     merchandiseId: selected.id,
                     quantity: 1,
+                    /*
+                     * VESTIGE's own pieces borrow a real Storefront variant so
+                     * the cart accepts them, which means Shopify returns its
+                     * own title and image for the line. These attributes carry
+                     * the real identity through, and the cart renders them in
+                     * preference to the merchandise fields.
+                     */
+                    attributes: [
+                      {key: '_vestige_title', value: product.title},
+                      {
+                        key: '_vestige_image',
+                        value: product.featuredImage?.url ?? '',
+                      },
+                    ],
                     // Lets the optimistic cart render the line — with the right
                     // size and price — before the server responds.
                     selectedVariant: {

@@ -102,3 +102,22 @@ export function Monogram({size = 34}: {size?: number}) {
     </span>
   );
 }
+
+export function TrashIcon({className = ''}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1"
+      aria-hidden="true"
+      focusable="false"
+      className={`h-[17px] w-[17px] ${className}`}
+    >
+      <path d="M4 7h16" />
+      <path d="M10 4h4" />
+      <path d="M6 7l1 13h10l1-13" />
+      <path d="M10 11v6M14 11v6" />
+    </svg>
+  );
+}
