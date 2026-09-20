@@ -21,7 +21,27 @@ p.on('console', (m) => { if (m.type() === 'error') errors.push(m.text().slice(0,
 await p.goto(BASE, {waitUntil: 'networkidle'});
 await p.waitForTimeout(1200);
 
-const card = p.locator('.hairline-grid article').first();
+// Find a card that actually has a second shot. Products photographed once
+// correctly render no hover layer at all, so they are not a failure here.
+const cards = p.locator('.hairline-grid article');
+const total = await cards.count();
+let card = null;
+for (let i = 0; i < total; i++) {
+  if ((await cards.nth(i).locator('img').count()) === 2) {
+    card = cards.nth(i);
+    break;
+  }
+}
+
+if (!card) {
+  console.log(JSON.stringify({
+    summary: 'skipped — no product in the grid has a second photograph',
+    note: 'Single-image products intentionally render no hover layer.',
+  }, null, 2));
+  await b.close();
+  process.exit(0);
+}
+
 const imgs = card.locator('img');
 ok('card stacks two images', (await imgs.count()) === 2, `${await imgs.count()} img(s)`);
 

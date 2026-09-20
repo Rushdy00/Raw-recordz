@@ -104,7 +104,7 @@ export function ProductCard({
               alt={image.altText || product.title}
               sizes={sizes}
               loading={loading}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover object-top"
             />
           ) : (
             <div className="h-full w-full bg-shell" />
@@ -123,7 +123,7 @@ export function ProductCard({
               aria-hidden="true"
               sizes={sizes}
               loading="lazy"
-              className="hover-swap absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 ease-in-out group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:transition-none motion-reduce:group-hover:opacity-0 motion-reduce:group-focus-within:opacity-0"
+              className="hover-swap absolute inset-0 h-full w-full object-cover object-top opacity-0 transition-opacity duration-500 ease-in-out group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:transition-none motion-reduce:group-hover:opacity-0 motion-reduce:group-focus-within:opacity-0"
             />
           ) : null}
         </div>

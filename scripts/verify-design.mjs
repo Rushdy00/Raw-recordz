@@ -86,8 +86,15 @@ ok('drop grid flush to edges', gridBox.x === 0 && Math.round(gridBox.width) === 
 ok('grid gap 1px', (await grid.evaluate((el) => getComputedStyle(el).gap)) === '1px');
 ok('drop grid 2 cols', (await grid.evaluate((el) =>
   getComputedStyle(el).gridTemplateColumns)).split(' ').length === 2);
-ok('6 product cards', (await page.locator('.hairline-grid article').count()) === 6,
-   String(await page.locator('.hairline-grid article').count()));
+// The drop is VESTIGE's own catalogue (one product per photograph).
+const cardCount = await page.locator('.hairline-grid article').count();
+ok('drop grid renders the catalogue', cardCount === 4, String(cardCount));
+
+// Every card must use VESTIGE's own photography, not demo product shots.
+const ownImages = await page.evaluate(() =>
+  [...document.querySelectorAll('.hairline-grid article img')]
+    .every((img) => new URL(img.currentSrc || img.src).pathname.startsWith('/products/')));
+ok('cards use VESTIGE photography', ownImages);
 
 // CTA geometry â€” the real add-to-cart button.
 const cta = page.locator('article button[type="submit"]').first();

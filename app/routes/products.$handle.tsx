@@ -14,15 +14,22 @@ import {ProductGallery} from '~/components/ProductGallery';
 import {Accordion} from '~/components/Accordion';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {editionLine} from '~/lib/season';
+import {localProductByHandle} from '~/lib/products';
+import {LocalProduct} from '~/components/LocalProduct';
 
 export const meta: Route.MetaFunction = ({data}) => {
+  const title = data?.local?.title ?? data?.product?.title ?? '';
+  const handle = data?.local?.handle ?? data?.product?.handle ?? '';
+  const description =
+    data?.local?.description ??
+    data?.product?.seo?.description ??
+    data?.product?.description ??
+    '';
+
   return [
-    {title: `VESTIGE — ${data?.product.title ?? ''}`},
-    {rel: 'canonical', href: `/products/${data?.product.handle}`},
-    {
-      name: 'description',
-      content: data?.product.seo?.description ?? data?.product.description ?? '',
-    },
+    {title: `VESTIGE — ${title}`},
+    {rel: 'canonical', href: `/products/${handle}`},
+    {name: 'description', content: description},
   ];
 };
 
@@ -39,6 +46,12 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     throw new Error('Expected product handle to be defined');
   }
 
+  // VESTIGE's own pieces are served from local data, not the Storefront API.
+  const local = localProductByHandle(handle);
+  if (local) {
+    return {product: null, local};
+  }
+
   const [{product}] = await Promise.all([
     storefront.query(PRODUCT_QUERY, {
       variables: {handle, selectedOptions: getSelectedProductOptions(request)},
@@ -52,11 +65,27 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
   // The API handle might be localized, so redirect to the localized handle
   redirectIfHandleIsLocalized(request, {handle, data: product});
 
-  return {product};
+  return {product, local: null};
 }
 
 export default function Product() {
-  const {product} = useLoaderData<typeof loader>();
+  const {local} = useLoaderData<typeof loader>();
+
+  // Hooks below assume the Storefront product shape, so local pieces render
+  // through their own component rather than being forced into it.
+  if (local) {
+    return <LocalProduct product={local} />;
+  }
+
+  return <StorefrontProduct />;
+}
+
+function StorefrontProduct() {
+  // This component only renders when the loader returned a Storefront
+  // product, so the non-null assertion holds and hooks stay unconditional.
+  const {product} = useLoaderData<typeof loader>() as {
+    product: NonNullable<Awaited<ReturnType<typeof loader>>['product']>;
+  };
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
