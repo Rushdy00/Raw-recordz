@@ -125,7 +125,7 @@ function RegionModal() {
 
     // Hydrogen switches market by updating the cart's buyer identity and
     // returning to a localized path.
-    fetcher.submit(
+    void fetcher.submit(
       {
         [CartForm.INPUT_NAME]: JSON.stringify({
           action: CartForm.ACTIONS.BuyerIdentityUpdate,

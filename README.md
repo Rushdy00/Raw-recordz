@@ -1,45 +1,89 @@
-# Hydrogen template: Skeleton
+# VESTIGE
 
-Hydrogen is Shopify’s stack for headless commerce. Hydrogen is designed to dovetail with [React Router](https://reactrouter.com/), the modern multi-strategy router for React. This template contains a **minimal setup** of components, queries and tooling to get started with Hydrogen.
+A Shopify Hydrogen storefront for VESTIGE — contemporary avant-garde clothing
+built from ancient heritage.
 
-[Check out Hydrogen docs](https://shopify.dev/custom-storefronts/hydrogen)
-[Get familiar with React Router](https://reactrouter.com/start/framework/routing)
+Minimal white storefront wrapped around dark campaign photography: black on
+white, 1px hairline dividers, square corners everywhere, no shadows. Anton for
+display, Helvetica/Arial for every piece of UI.
 
-## What's included
-
-- React Router
-- Hydrogen
-- Oxygen
-- Vite
-- Shopify CLI
-- ESLint
-- Prettier
-- GraphQL generator
-- TypeScript and JavaScript flavors
-- Minimal setup of components and routes
-
-## Getting started
-
-**Requirements:**
-
-- Node.js version 22.x or 24.x
+## Running it
 
 ```bash
-npm create @shopify/hydrogen@latest
+npm install
+npm run dev          # http://localhost:3000, against Mock.shop
 ```
 
-## Building for production
+The storefront runs without credentials: with no `PUBLIC_STORE_DOMAIN` set,
+Hydrogen falls back to Mock.shop in development. To point it at a real store:
 
 ```bash
-npm run build
+npx shopify hydrogen link
+npx shopify hydrogen env pull
 ```
 
-## Local development
+`npm run preview` runs the production build, which **requires** a real
+`PUBLIC_STORE_DOMAIN` in `.env` — the Mock.shop fallback is development-only.
+
+## Content the storefront reads
+
+Everything below is optional. Each has a typed fallback in `app/lib/vestige.ts`,
+so the design renders fully before a store has any of it, and switches to live
+data as soon as it exists.
+
+| Source | Shape | Drives |
+| --- | --- | --- |
+| `hero_slides` metaobject | `image`, `eyebrow`, `headline`, `copy_1`–`copy_4`, `link` | Hero slideshow |
+| `season.core`, `season.philosophy`, `season.design_principle` | shop metafields, single-line text | Season concept block |
+| `product.edition_size` | product metafield | The "120 UNITS MADE" line on the PDP |
+| `2026fw-drop-1` collection | collection | Homepage drop grid (falls back to newest products) |
+
+Shopify pages win over the built-in copy: create a page with handle `about`,
+`faq`, `shipping`, `refund` or `privacy` and it replaces the placeholder text.
+
+Newsletter signups create a marketing-consented Shopify customer. Set
+`KLAVIYO_API_KEY` and `KLAVIYO_LIST_ID` to also forward the address to Klaviyo;
+without them that step is skipped.
+
+## Design system
+
+Tailwind v4 is configured CSS-first in `app/styles/tailwind.css` — there is no
+`tailwind.config.js`. `@theme` holds the palette (`ink`, `paper`, `silver`,
+`shell`), the Anton display face, the tracking scale and the zeroed radius and
+shadow scales.
+
+Two things there are worth knowing before editing styles:
+
+- **`reset.css` and `app.css` are imported *into* that stylesheet**, and the
+  reset declares its rules inside `@layer base`. Unlayered CSS outranks every
+  `@layer`, so linking the reset separately lets `h1 {font-size: inherit}`
+  silently beat utilities like `text-[188px]`.
+- **Tailwind runs through PostCSS**, not `@tailwindcss/vite`. The Vite plugin
+  discovers classes by walking Vite's module graph, which does not see the app's
+  components under Hydrogen's worker SSR — utilities used only in `.tsx` files
+  were dropped from the build.
+
+Square corners are enforced globally. The two intentional exceptions opt back
+in with `.is-pill` (the Rewards pill) and `.is-round` (the hero dots).
+
+## Verifying the design
+
+The art direction is asserted in a real browser rather than trusted from the
+markup — type scale, hairline grids, square corners, overlay focus traps, cart
+mutations, and the 390px layout:
 
 ```bash
-npm run dev
+npm run dev                                              # in one terminal
+npm install --no-save playwright && npx playwright install chromium
+npm run verify:design                                    # 57 checks
 ```
 
-## Setup for using Customer Account API (`/account` section)
+`scripts/audit-mobile.mjs` and `scripts/audit-a11y.mjs` cover tap-target sizes,
+overflow at 390px, accessible names, and the `prefers-reduced-motion` path.
 
-Follow step 1 and 2 of <https://shopify.dev/docs/custom-storefronts/building-with-the-customer-account-api/hydrogen#step-1-set-up-a-public-domain-for-local-development>
+## Placeholder assets
+
+Campaign imagery is placeholder photography from Unsplash, allow-listed in the
+CSP in `app/entry.server.tsx`. Replace both the URLs in `app/lib/vestige.ts` and
+that CSP entry when the real campaign lands in Shopify Files. All copy is
+original.

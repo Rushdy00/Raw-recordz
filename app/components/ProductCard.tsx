@@ -63,8 +63,12 @@ export function ProductCard({
       </Link>
 
       <div className="flex flex-1 flex-col gap-3 px-5 py-6 lg:px-7 lg:py-8">
-        <h3 className="min-h-[2.6em] text-[13px] leading-[1.3] tracking-[0.14em] uppercase">
-          <Link to={`/products/${product.handle}`} prefetch="intent">
+        <h3 className="text-[13px] leading-[1.3] tracking-[0.14em] uppercase">
+          <Link
+            to={`/products/${product.handle}`}
+            prefetch="intent"
+            className="block min-h-[2.6em] py-1"
+          >
             <span className="clamp-2">{product.title}</span>
           </Link>
         </h3>

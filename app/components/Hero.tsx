@@ -105,7 +105,7 @@ export function Hero({slides}: {slides: HeroSlide[]}) {
             {active.copy.map((line) => (
               <p
                 key={line}
-                className="text-[12px] leading-[1.5] tracking-[0.14em] uppercase"
+                className="text-[11px] leading-[1.5] tracking-[0.14em] uppercase lg:text-[12px]"
               >
                 {line}
               </p>
@@ -113,8 +113,8 @@ export function Hero({slides}: {slides: HeroSlide[]}) {
           </div>
         </div>
 
-        {/* Dots */}
-        <div className="flex justify-center gap-3 pt-8">
+        {/* Dots. The mark stays 8px; the button around it is a 32px target. */}
+        <div className="flex justify-center pt-6">
           {slides.map((slide, slideIndex) => (
             <button
               key={slide.id}
@@ -122,10 +122,15 @@ export function Hero({slides}: {slides: HeroSlide[]}) {
               onClick={() => goTo(slideIndex)}
               aria-label={`Show slide ${slideIndex + 1}: ${slide.headline}`}
               aria-current={slideIndex === index}
-              className={`is-round h-2 w-2 border border-paper ${
-                slideIndex === index ? 'bg-paper' : 'bg-transparent'
-              }`}
-            />
+              className="flex h-8 w-8 items-center justify-center"
+            >
+              <span
+                aria-hidden="true"
+                className={`is-round block h-2 w-2 border border-paper ${
+                  slideIndex === index ? 'bg-paper' : 'bg-transparent'
+                }`}
+              />
+            </button>
           ))}
         </div>
       </div>

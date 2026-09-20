@@ -32,6 +32,8 @@ export default [
       '**/*.generated.d.ts',
       '**/.react-router/',
       '**/packages/hydrogen/dist/',
+      // Local browser-driven audits: console output is their whole purpose.
+      'scripts/',
     ],
   },
   ...fixupConfigRules(

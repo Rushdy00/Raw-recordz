@@ -29,7 +29,7 @@ export function Footer(_props: FooterProps) {
               key={link.title}
               to={link.url}
               prefetch="intent"
-              className="text-[12px] tracking-[0.22em] uppercase hover:underline"
+              className="py-1 text-[12px] tracking-[0.22em] uppercase hover:underline"
             >
               {link.title}
             </Link>

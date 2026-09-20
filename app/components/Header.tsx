@@ -12,6 +12,9 @@ import {
 } from '~/components/Icons';
 import {ANNOUNCEMENT, NAV_ROWS, type NavItem} from '~/lib/vestige';
 
+/** 40px hit area around the 18px header icons. */
+const ICON_HIT = 'flex h-10 w-10 items-center justify-center';
+
 interface HeaderProps {
   header: HeaderQuery;
   cart: Promise<CartApiQueryFragment | null>;
@@ -68,7 +71,7 @@ export function Header({header, cart, isLoggedIn}: HeaderProps) {
               type="button"
               onClick={() => open('mobile')}
               aria-label="Open menu"
-              className="flex h-8 w-8 items-center justify-center lg:hidden"
+              className="-ml-2 flex h-10 w-10 items-center justify-center lg:hidden"
             >
               <MenuIcon />
             </button>
@@ -91,9 +94,10 @@ export function Header({header, cart, isLoggedIn}: HeaderProps) {
             aria-label="Main"
             className="hidden justify-center lg:flex lg:flex-col lg:items-center lg:gap-[6px]"
           >
-            {NAV_ROWS.map((row, rowIndex) => (
+            {NAV_ROWS.map((row) => (
+              // Rows are static, so the titles they contain identify them.
               <NavRow
-                key={rowIndex}
+                key={row.map((item) => item.title).join('-')}
                 row={row}
                 openPanel={openPanel}
                 setOpenPanel={setOpenPanel}
@@ -102,11 +106,12 @@ export function Header({header, cart, isLoggedIn}: HeaderProps) {
           </nav>
           <span className="lg:hidden" />
 
-          {/* Right — account, search, cart */}
-          <div className="flex items-center justify-end gap-4 lg:gap-5">
+          {/* Right — account, search, cart. Each control keeps a 40px hit
+              area so the 18px icons stay comfortably tappable. */}
+          <div className="flex items-center justify-end gap-1 lg:gap-2">
             <Suspense
               fallback={
-                <Link to="/account" aria-label="Account">
+                <Link to="/account" aria-label="Account" className={ICON_HIT}>
                   <AccountIcon />
                 </Link>
               }
@@ -114,7 +119,7 @@ export function Header({header, cart, isLoggedIn}: HeaderProps) {
               <Await
                 resolve={isLoggedIn}
                 errorElement={
-                  <Link to="/account" aria-label="Account">
+                  <Link to="/account" aria-label="Account" className={ICON_HIT}>
                     <AccountIcon />
                   </Link>
                 }
@@ -124,6 +129,7 @@ export function Header({header, cart, isLoggedIn}: HeaderProps) {
                     to="/account"
                     prefetch="intent"
                     aria-label={loggedIn ? 'Account' : 'Sign in'}
+                    className={ICON_HIT}
                   >
                     <AccountIcon />
                   </Link>
@@ -135,7 +141,7 @@ export function Header({header, cart, isLoggedIn}: HeaderProps) {
               type="button"
               onClick={() => open('search')}
               aria-label="Search"
-              className="flex items-center"
+              className={ICON_HIT}
             >
               <SearchIcon />
             </button>
@@ -247,7 +253,7 @@ function CartBadge({count}: {count: number | null}) {
       type="button"
       onClick={() => open('cart')}
       aria-label={`Open cart, ${quantity} ${quantity === 1 ? 'item' : 'items'}`}
-      className="flex items-center gap-2"
+      className="flex h-10 items-center gap-2 px-2"
     >
       <BagIcon />
       <span className="text-[11px] tracking-[0.14em] tabular-nums">
