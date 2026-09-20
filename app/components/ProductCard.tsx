@@ -77,10 +77,17 @@ export function ProductCard({
       ? compareAt
       : null;
 
-  const image = product.featuredImage;
+  const gallery = product.images?.nodes ?? [];
+
+  // The chosen variant's own shot wins, so picking a colour changes the card.
+  const image = selected?.image ?? product.featuredImage ?? gallery[0];
+
+  // Hover reveals the next shot. Skip it when that would just crossfade the
+  // image into itself (single-image products, or a variant-specific shot).
+  const hoverImage = gallery.find((shot) => shot.id !== image?.id) ?? null;
 
   return (
-    <article className="flex min-w-0 flex-col bg-paper">
+    <article className="group flex min-w-0 flex-col bg-paper">
       <Link
         to={`/products/${product.handle}`}
         prefetch="intent"
@@ -88,7 +95,9 @@ export function ProductCard({
         tabIndex={-1}
         aria-hidden="true"
       >
-        <div className={`${imageHeightClass} w-full overflow-hidden bg-shell`}>
+        <div
+          className={`relative ${imageHeightClass} w-full overflow-hidden bg-shell`}
+        >
           {image ? (
             <Image
               data={image}
@@ -100,6 +109,23 @@ export function ProductCard({
           ) : (
             <div className="h-full w-full bg-shell" />
           )}
+
+          {/*
+            Second shot, stacked on top and faded in on hover or keyboard
+            focus within the card. `.hover-swap` hides it outright on touch
+            screens, which cannot hover, and `motion-reduce` holds it hidden
+            so the card stays still for anyone who asked for less motion.
+          */}
+          {hoverImage ? (
+            <Image
+              data={hoverImage}
+              alt=""
+              aria-hidden="true"
+              sizes={sizes}
+              loading="lazy"
+              className="hover-swap absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 ease-in-out group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:transition-none motion-reduce:group-hover:opacity-0 motion-reduce:group-focus-within:opacity-0"
+            />
+          ) : null}
         </div>
       </Link>
 

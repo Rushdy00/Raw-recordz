@@ -156,6 +156,20 @@
   }
 
   /*
+   * The card's hover image. It is only reachable on devices that actually
+   * have a pointer, so touch screens skip both the fade and the download.
+   */
+  .hover-swap {
+    display: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hover-swap {
+      display: block;
+    }
+  }
+
+  /*
    * Product grids are flush to the viewport and divided only by hairlines:
    * a black grid background showing through 1px gaps between white cells.
    */

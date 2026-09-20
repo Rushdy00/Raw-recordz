@@ -263,6 +263,17 @@ export const VESTIGE_PRODUCT_CARD_FRAGMENT = `#graphql
       width
       height
     }
+    # Two images are enough for the card: the first is the featured shot, the
+    # second is what the hover crossfade reveals.
+    images(first: 2) {
+      nodes {
+        id
+        url
+        altText
+        width
+        height
+      }
+    }
     priceRange {
       minVariantPrice {
         amount
