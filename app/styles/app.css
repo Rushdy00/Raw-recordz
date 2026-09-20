@@ -43,6 +43,51 @@ body.overlay-open {
   overflow: hidden;
 }
 
+/*
+ * Predictive search results in the search drawer. The component's markup is
+ * shared with the scaffold, so it is styled here by class rather than by
+ * rewriting every node.
+ */
+.predictive-search-result {
+  margin-bottom: 28px;
+}
+
+.predictive-search-result h5 {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #8a8a8d;
+  margin-bottom: 12px;
+}
+
+.predictive-search-result-item {
+  border-bottom: 1px solid #e2e2e2;
+}
+
+.predictive-search-result-item a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.predictive-search-result-item img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  background: #efefef;
+}
+
+.predictive-search-result-item small {
+  display: block;
+  margin-top: 4px;
+  color: #8a8a8d;
+  letter-spacing: 0.14em;
+}
+
 .route-error {
   max-width: 640px;
   margin: 0 auto;

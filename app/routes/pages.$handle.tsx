@@ -1,68 +1,81 @@
 import {useLoaderData} from 'react-router';
 import type {Route} from './+types/pages.$handle';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {BackToTop} from '~/components/SeasonConcept';
+import {PAGE_FALLBACKS} from '~/lib/vestige';
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.page.title ?? ''}`}];
+  return [{title: `VESTIGE — ${data?.title ?? ''}`}];
 };
 
 export async function loader(args: Route.LoaderArgs) {
-  // Start fetching non-critical data without blocking time to first byte
-  const deferredData = loadDeferredData(args);
-
-  // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
-
-  return {...deferredData, ...criticalData};
+  return {...criticalData};
 }
 
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- */
 async function loadCriticalData({context, request, params}: Route.LoaderArgs) {
-  if (!params.handle) {
+  const {handle} = params;
+
+  if (!handle) {
     throw new Error('Missing page handle');
   }
 
-  const [{page}] = await Promise.all([
-    context.storefront.query(PAGE_QUERY, {
-      variables: {
-        handle: params.handle,
-      },
-    }),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
+  const {page} = await context.storefront
+    .query(PAGE_QUERY, {variables: {handle}})
+    .catch(() => ({page: null}));
 
-  if (!page) {
+  if (page) {
+    redirectIfHandleIsLocalized(request, {handle, data: page});
+
+    return {
+      title: page.title,
+      bodyHtml: page.body,
+      paragraphs: null,
+    };
+  }
+
+  // The storefront's own policy and information pages are part of the design,
+  // so they render from written copy on stores that have not created them.
+  const fallback = PAGE_FALLBACKS[handle];
+
+  if (!fallback) {
     throw new Response('Not Found', {status: 404});
   }
 
-  redirectIfHandleIsLocalized(request, {handle: params.handle, data: page});
-
   return {
-    page,
+    title: fallback.title,
+    bodyHtml: null,
+    paragraphs: fallback.body,
   };
 }
 
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- */
-function loadDeferredData({context}: Route.LoaderArgs) {
-  return {};
-}
-
 export default function Page() {
-  const {page} = useLoaderData<typeof loader>();
+  const {title, bodyHtml, paragraphs} = useLoaderData<typeof loader>();
 
   return (
-    <div className="page">
-      <header>
-        <h1>{page.title}</h1>
+    <div>
+      <header className="border-b border-ink px-5 py-14 lg:px-8 lg:py-20">
+        <h1 className="text-[13px] tracking-[0.3em] uppercase">{title}</h1>
       </header>
-      <main dangerouslySetInnerHTML={{__html: page.body}} />
+
+      <div className="px-5 py-[100px] lg:px-8 lg:py-[120px]">
+        <div className="max-w-[640px] text-[14px] leading-[1.85]">
+          {bodyHtml ? (
+            <div
+              className="space-y-6 [&_a]:underline"
+              dangerouslySetInnerHTML={{__html: bodyHtml}}
+            />
+          ) : (
+            <div className="space-y-6">
+              {paragraphs?.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <BackToTop />
     </div>
   );
 }

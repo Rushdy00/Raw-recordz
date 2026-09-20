@@ -1,7 +1,13 @@
 /*
  * Minimal reset. The storefront is edge to edge, so `main` carries no margin
  * and nothing is rounded.
+ *
+ * These rules live in Tailwind's `base` layer. Unlayered CSS outranks every
+ * layered rule, so leaving them unlayered would let `h1 {font-size: inherit}`
+ * override utilities such as `text-[188px]`.
  */
+
+@layer base {
 
 body {
   margin: 0;
@@ -90,4 +96,6 @@ img,
 svg {
   display: block;
   max-width: 100%;
+}
+
 }

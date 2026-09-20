@@ -23,7 +23,9 @@ export function CartLineItem({
   childrenMap: LineItemChildrenMap;
 }) {
   const {id, merchandise} = line;
-  const {product, title, image, selectedOptions} = merchandise;
+  const {product, title, image} = merchandise;
+  // An optimistic line may not carry every field yet, so default before use.
+  const selectedOptions = merchandise.selectedOptions ?? [];
   const lineItemUrl = useVariantUrl(product.handle, selectedOptions);
   const {close} = useAside();
   const lineItemChildren = childrenMap[id];

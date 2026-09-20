@@ -84,7 +84,26 @@ export function ProductCard({
             onClick={() => open('cart')}
             lines={
               variant
-                ? [{merchandiseId: variant.id, quantity: 1}]
+                ? [
+                    {
+                      merchandiseId: variant.id,
+                      quantity: 1,
+                      // Required for the optimistic cart to render the line
+                      // before the server responds. `selectedOptions` must be
+                      // present: the cart line reads it to show the size.
+                      selectedVariant: {
+                        ...variant,
+                        title: product.title,
+                        selectedOptions: [],
+                        product: {
+                          handle: product.handle,
+                          title: product.title,
+                        },
+                        price: product.priceRange.minVariantPrice,
+                        image: product.featuredImage,
+                      },
+                    },
+                  ]
                 : []
             }
             className="btn-ink"

@@ -144,6 +144,7 @@ function RegionModal() {
     <OverlayScrim onClose={close} labelledBy={titleId}>
       <div
         ref={containerRef}
+        data-overlay-panel
         className="relative z-10 flex max-h-[80vh] w-full max-w-[520px] flex-col border border-ink bg-paper"
       >
         <div className="flex items-center justify-between border-b border-ink px-6 py-5">

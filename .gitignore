@@ -7,3 +7,6 @@
 .env
 .shopify
 .react-router
+
+# Local design verification uses Playwright, installed on demand
+

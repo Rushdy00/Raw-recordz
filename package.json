@@ -10,7 +10,8 @@
     "preview": "shopify hydrogen preview --build",
     "lint": "eslint --no-error-on-unmatched-pattern .",
     "typecheck": "react-router typegen && tsc --noEmit",
-    "codegen": "shopify hydrogen codegen && react-router typegen"
+    "codegen": "shopify hydrogen codegen && react-router typegen",
+    "verify:design": "node scripts/verify-design.mjs"
   },
   "prettier": "@shopify/prettier-config",
   "dependencies": {
@@ -36,6 +37,7 @@
     "@shopify/mini-oxygen": "4.2.2",
     "@shopify/oxygen-workers-types": "^4.1.6",
     "@shopify/prettier-config": "^1.1.2",
+    "@tailwindcss/postcss": "^4.3.3",
     "@tailwindcss/vite": "^4.1.6",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/eslint": "^9.6.1",

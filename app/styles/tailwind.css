@@ -6,7 +6,30 @@
  * black on white, hairline dividers, square corners, no shadows.
  */
 
+/*
+ * Anton is the only display face. Loaded with `display=swap` and a real
+ * fallback stack so the hero never renders invisible text.
+ * `@import` rules must come before any other rule.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
 @import 'tailwindcss';
+
+/*
+ * The reset and route styles are imported here rather than linked separately
+ * so the whole storefront shares one cascade. `reset.css` declares its rules
+ * inside `@layer base`, which keeps them below Tailwind's utilities — linked
+ * as their own unlayered stylesheet they would outrank every utility.
+ */
+@import './reset.css';
+@import './app.css';
+
+/*
+ * Tailwind v4 auto-detects sources relative to this stylesheet, which sits in
+ * app/styles. Point it at the whole app tree so utilities used in components
+ * and routes (including arbitrary values like `text-[13px]`) are generated.
+ */
+@source './app/**/*.{ts,tsx,js,jsx}';
+@source '../**/*.{ts,tsx,js,jsx}';
 
 @theme {
   /* Palette */
@@ -52,12 +75,6 @@
   --shadow-2xl: none;
   --shadow-inner: none;
 }
-
-/*
- * Anton is the only display face. Loaded with `display=swap` and a real
- * fallback stack so the hero never renders invisible text.
- */
-@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
 
 @layer base {
   html {

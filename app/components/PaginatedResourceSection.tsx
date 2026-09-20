@@ -22,17 +22,15 @@ export function PaginatedResourceSection<NodesType>({
           children({node, index}),
         );
 
+        const pagerClassName =
+          'block px-5 py-6 text-center text-[11px] tracking-[0.22em] uppercase underline lg:px-8';
+
         return (
           <div>
-            <PreviousLink>
-              {isLoading ? (
-                'Loading...'
-              ) : (
-                <span>
-                  <span aria-hidden="true">↑</span> Load previous
-                </span>
-              )}
+            <PreviousLink className={pagerClassName}>
+              {isLoading ? 'Loading…' : 'Load previous'}
             </PreviousLink>
+
             {resourcesClassName ? (
               <div
                 aria-label={ariaLabel}
@@ -44,14 +42,9 @@ export function PaginatedResourceSection<NodesType>({
             ) : (
               resourcesMarkup
             )}
-            <NextLink>
-              {isLoading ? (
-                'Loading...'
-              ) : (
-                <span>
-                  Load more <span aria-hidden="true">↓</span>
-                </span>
-              )}
+
+            <NextLink className={pagerClassName}>
+              {isLoading ? 'Loading…' : 'Load more'}
             </NextLink>
           </div>
         );

@@ -49,6 +49,7 @@ export function NewsletterPopup() {
     <OverlayScrim onClose={() => setOpen(false)} labelledBy={titleId}>
       <div
         ref={containerRef}
+        data-overlay-panel
         className="relative z-10 w-full max-w-[440px] border border-ink bg-paper p-8 lg:p-10"
       >
         <div className="flex items-start justify-between">

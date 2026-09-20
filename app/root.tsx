@@ -13,9 +13,14 @@ import {
 import type {Route} from './+types/root';
 import favicon from '~/assets/favicon.svg';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
-import resetStyles from '~/styles/reset.css?url';
-import appStyles from '~/styles/app.css?url';
-import tailwindCss from './styles/tailwind.css?url';
+/*
+ * One stylesheet for the whole storefront. It is imported for its side effect
+ * so Vite injects it in development and emits a real CSS file in the build;
+ * importing with `?url` and linking by hand serves it as a JavaScript module
+ * in dev, which the browser refuses to apply. reset.css and app.css are
+ * imported from inside it so everything shares a single cascade.
+ */
+import '~/styles/tailwind.css';
 import {PageLayout} from './components/PageLayout';
 
 export type RootLoader = typeof loader;
@@ -42,16 +47,6 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
   return false;
 };
 
-/**
- * The main and reset stylesheets are added in the Layout component
- * to prevent a bug in development HMR updates.
- *
- * This avoids the "failed to execute 'insertBefore' on 'Node'" error
- * that occurs after editing and navigating to another page.
- *
- * It's a temporary fix until the issue is resolved.
- * https://github.com/remix-run/remix/issues/9242
- */
 export function links() {
   return [
     {
@@ -61,6 +56,13 @@ export function links() {
     {
       rel: 'preconnect',
       href: 'https://shop.app',
+    },
+    // Anton is served by Google Fonts from the stylesheet.
+    {rel: 'preconnect', href: 'https://fonts.googleapis.com'},
+    {
+      rel: 'preconnect',
+      href: 'https://fonts.gstatic.com',
+      crossOrigin: 'anonymous',
     },
     {rel: 'icon', type: 'image/svg+xml', href: favicon},
   ];
@@ -186,9 +188,6 @@ export function Layout({children}: {children?: React.ReactNode}) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <link rel="stylesheet" href={tailwindCss}></link>
-        <link rel="stylesheet" href={resetStyles}></link>
-        <link rel="stylesheet" href={appStyles}></link>
         <Meta />
         <Links />
       </head>

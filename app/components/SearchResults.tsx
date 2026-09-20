@@ -39,9 +39,14 @@ function SearchResultsArticles({
   }
 
   return (
-    <div className="search-result">
-      <h2>Articles</h2>
-      <div>
+    <section aria-labelledby="search-articles" className="border-t border-ink">
+      <h2
+        id="search-articles"
+        className="px-5 py-8 text-[11px] tracking-[0.3em] uppercase lg:px-8"
+      >
+        Articles
+      </h2>
+      <ul className="px-5 pb-10 lg:px-8">
         {articles?.nodes?.map((article) => {
           const articleUrl = urlWithTrackingParams({
             baseUrl: `/blogs/${article.handle}`,
@@ -50,16 +55,19 @@ function SearchResultsArticles({
           });
 
           return (
-            <div className="search-results-item" key={article.id}>
-              <Link prefetch="intent" to={articleUrl}>
+            <li key={article.id} className="border-b border-[#E2E2E2]">
+              <Link
+                prefetch="intent"
+                to={articleUrl}
+                className="block py-4 text-[12px] tracking-[0.14em] uppercase"
+              >
                 {article.title}
               </Link>
-            </div>
+            </li>
           );
         })}
-      </div>
-      <br />
-    </div>
+      </ul>
+    </section>
   );
 }
 
@@ -69,9 +77,14 @@ function SearchResultsPages({term, pages}: PartialSearchResult<'pages'>) {
   }
 
   return (
-    <div className="search-result">
-      <h2>Pages</h2>
-      <div>
+    <section aria-labelledby="search-pages" className="border-t border-ink">
+      <h2
+        id="search-pages"
+        className="px-5 py-8 text-[11px] tracking-[0.3em] uppercase lg:px-8"
+      >
+        Pages
+      </h2>
+      <ul className="px-5 pb-10 lg:px-8">
         {pages?.nodes?.map((page) => {
           const pageUrl = urlWithTrackingParams({
             baseUrl: `/pages/${page.handle}`,
@@ -80,16 +93,19 @@ function SearchResultsPages({term, pages}: PartialSearchResult<'pages'>) {
           });
 
           return (
-            <div className="search-results-item" key={page.id}>
-              <Link prefetch="intent" to={pageUrl}>
+            <li key={page.id} className="border-b border-[#E2E2E2]">
+              <Link
+                prefetch="intent"
+                to={pageUrl}
+                className="block py-4 text-[12px] tracking-[0.14em] uppercase"
+              >
                 {page.title}
               </Link>
-            </div>
+            </li>
           );
         })}
-      </div>
-      <br />
-    </div>
+      </ul>
+    </section>
   );
 }
 
@@ -102,8 +118,14 @@ function SearchResultsProducts({
   }
 
   return (
-    <div className="search-result">
-      <h2>Products</h2>
+    <section aria-labelledby="search-products">
+      <h2
+        id="search-products"
+        className="px-5 py-8 text-[11px] tracking-[0.3em] uppercase lg:px-8"
+      >
+        Products
+      </h2>
+
       <Pagination connection={products}>
         {({nodes, isLoading, NextLink, PreviousLink}) => {
           const ItemsMarkup = nodes.map((product) => {
@@ -117,45 +139,65 @@ function SearchResultsProducts({
             const image = product?.selectedOrFirstAvailableVariant?.image;
 
             return (
-              <div className="search-results-item" key={product.id}>
-                <Link prefetch="intent" to={productUrl}>
-                  {image && (
-                    <Image data={image} alt={product.title} width={50} />
-                  )}
-                  <div>
-                    <p>{product.title}</p>
-                    <small>{price && <Money data={price} />}</small>
+              <li key={product.id} className="bg-paper">
+                <Link
+                  prefetch="intent"
+                  to={productUrl}
+                  className="flex h-full flex-col"
+                >
+                  <div className="aspect-[3/4] w-full overflow-hidden bg-shell">
+                    {image ? (
+                      <Image
+                        data={image}
+                        alt={image.altText || product.title}
+                        sizes="(min-width: 1024px) 25vw, 50vw"
+                        loading="lazy"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : null}
+                  </div>
+                  <div className="flex flex-col gap-2 px-4 py-5">
+                    <p className="text-[12px] leading-[1.3] tracking-[0.14em] uppercase">
+                      <span className="clamp-2">{product.title}</span>
+                    </p>
+                    <span className="text-[12px] tracking-[0.14em]">
+                      {price ? <Money data={price} /> : null}
+                    </span>
                   </div>
                 </Link>
-              </div>
+              </li>
             );
           });
 
           return (
             <div>
-              <div>
-                <PreviousLink>
-                  {isLoading ? 'Loading...' : <span>↑ Load previous</span>}
+              <div className="flex justify-center">
+                <PreviousLink className="px-5 py-4 text-[11px] tracking-[0.22em] underline uppercase">
+                  {isLoading ? 'Loading…' : 'Load previous'}
                 </PreviousLink>
               </div>
-              <div>
+
+              <ul className="hairline-grid grid-cols-2 lg:grid-cols-4">
                 {ItemsMarkup}
-                <br />
-              </div>
-              <div>
-                <NextLink>
-                  {isLoading ? 'Loading...' : <span>Load more ↓</span>}
+              </ul>
+
+              <div className="flex justify-center">
+                <NextLink className="px-5 py-4 text-[11px] tracking-[0.22em] underline uppercase">
+                  {isLoading ? 'Loading…' : 'Load more'}
                 </NextLink>
               </div>
             </div>
           );
         }}
       </Pagination>
-      <br />
-    </div>
+    </section>
   );
 }
 
 function SearchResultsEmpty() {
-  return <p>No results, try a different search.</p>;
+  return (
+    <p className="px-5 py-[100px] text-[12px] tracking-[0.22em] text-silver uppercase lg:px-8">
+      No results. Try a different search.
+    </p>
+  );
 }

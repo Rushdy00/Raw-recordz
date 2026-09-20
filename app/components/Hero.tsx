@@ -69,7 +69,11 @@ export function Hero({slides}: {slides: HeroSlide[]}) {
                 sizes="100vw"
                 /* Only the first slide is above the fold. */
                 loading={slideIndex === 0 ? 'eager' : 'lazy'}
-                fetchPriority={slideIndex === 0 ? 'high' : 'auto'}
+                /*
+                 * React 18 does not recognise the camelCase `fetchPriority`
+                 * prop, so the lowercase DOM attribute is passed instead.
+                 */
+                {...{fetchpriority: slideIndex === 0 ? 'high' : 'auto'}}
                 className="h-full w-full object-cover"
               />
             ) : (

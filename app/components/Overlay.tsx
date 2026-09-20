@@ -28,11 +28,22 @@ export function useOverlay({
 
   const focusFirst = useCallback(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container) return false;
+
     const target =
       container.querySelector<HTMLElement>('[data-autofocus]') ??
       container.querySelector<HTMLElement>(FOCUSABLE);
-    target?.focus();
+
+    if (target) {
+      target.focus();
+      return true;
+    }
+
+    // Contents may still be streaming in (the cart drawer awaits its lines).
+    // Focus the panel itself so the trap has somewhere to hold focus.
+    container.setAttribute('tabindex', '-1');
+    container.focus();
+    return false;
   }, []);
 
   useEffect(() => {
@@ -42,8 +53,12 @@ export function useOverlay({
     restoreRef.current = document.activeElement as HTMLElement | null;
     document.body.classList.add('overlay-open');
 
-    // Wait a frame so the overlay is painted before focus moves into it.
-    const raf = requestAnimationFrame(focusFirst);
+    // Focus after paint, then retry once the deferred contents arrive.
+    let raf = requestAnimationFrame(() => {
+      if (!focusFirst()) {
+        raf = requestAnimationFrame(() => focusFirst());
+      }
+    });
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
@@ -57,9 +72,14 @@ export function useOverlay({
       const container = containerRef.current;
       if (!container) return;
 
+      // `offsetParent` is null inside position:fixed ancestors, so measure the
+      // rendered box instead to decide what is really focusable.
       const focusable = Array.from(
         container.querySelectorAll<HTMLElement>(FOCUSABLE),
-      ).filter((el) => el.offsetParent !== null || el === document.activeElement);
+      ).filter((el) => {
+        const rect = el.getBoundingClientRect();
+        return rect.width > 0 || rect.height > 0 || el === document.activeElement;
+      });
 
       if (focusable.length === 0) {
         event.preventDefault();

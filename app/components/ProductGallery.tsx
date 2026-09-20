@@ -44,7 +44,7 @@ export function ProductGallery({
               alt={hero.altText || title}
               sizes="(min-width: 1024px) 60vw, 100vw"
               loading="eager"
-              fetchPriority="high"
+              {...{fetchpriority: 'high'}}
               className="h-full w-full object-cover"
             />
           </div>

@@ -3,10 +3,11 @@ import {defineConfig} from 'vite';
 import {hydrogen} from '@shopify/hydrogen/vite';
 import {oxygen} from '@shopify/mini-oxygen/vite';
 import {reactRouter} from '@react-router/dev/vite';
-import tailwindcss from '@tailwindcss/vite';
 
+// Tailwind is applied through PostCSS (see postcss.config.mjs), not the Vite
+// plugin, so that utilities used in .tsx files are generated correctly.
 export default defineConfig({
-  plugins: [tailwindcss(), hydrogen(), oxygen(), reactRouter()],
+  plugins: [hydrogen(), oxygen(), reactRouter()],
   resolve: {
     alias: {
       // Vite's native tsconfig path resolver does not cover JavaScript

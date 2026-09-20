@@ -56,6 +56,7 @@ export function Aside({
 
       <div
         ref={containerRef}
+        data-overlay-panel
         className={`relative z-10 flex h-full flex-col border-l border-ink bg-paper ${
           isFullScreen ? 'w-full' : 'w-full max-w-[440px]'
         }`}

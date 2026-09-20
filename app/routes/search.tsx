@@ -14,7 +14,7 @@ import type {
 } from 'storefrontapi.generated';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Search`}];
+  return [{title: 'VESTIGE — Search'}];
 };
 
 export async function loader({request, context}: Route.LoaderArgs) {
@@ -41,24 +41,42 @@ export default function SearchPage() {
   if (type === 'predictive') return null;
 
   return (
-    <div className="search">
-      <h1>Search</h1>
-      <SearchForm>
-        {({inputRef}) => (
-          <>
-            <input
-              defaultValue={term}
-              name="q"
-              placeholder="Search…"
-              ref={inputRef}
-              type="search"
-            />
-            &nbsp;
-            <button type="submit">Search</button>
-          </>
-        )}
-      </SearchForm>
-      {error && <p style={{color: 'red'}}>{error}</p>}
+    <div>
+      <header className="border-b border-ink px-5 py-14 lg:px-8 lg:py-20">
+        <h1 className="text-[13px] tracking-[0.3em] uppercase">Search</h1>
+
+        <SearchForm>
+          {({inputRef}) => (
+            <div className="mt-8 flex max-w-[520px] gap-2">
+              <label htmlFor="search-input" className="sr-only">
+                Search
+              </label>
+              <input
+                id="search-input"
+                defaultValue={term}
+                name="q"
+                placeholder="SEARCH"
+                ref={inputRef}
+                type="search"
+                className="min-w-0 flex-1 border border-ink px-4 py-3 text-[12px] tracking-[0.22em] uppercase placeholder:text-silver"
+              />
+              <button
+                type="submit"
+                className="border border-ink px-6 text-[11px] tracking-[0.22em] uppercase"
+              >
+                Go
+              </button>
+            </div>
+          )}
+        </SearchForm>
+
+        {error ? (
+          <p role="alert" className="mt-4 text-[12px] tracking-[0.14em] uppercase">
+            {error}
+          </p>
+        ) : null}
+      </header>
+
       {!term || !result?.total ? (
         <SearchResults.Empty />
       ) : (
@@ -72,6 +90,7 @@ export default function SearchPage() {
           )}
         </SearchResults>
       )}
+
       <Analytics.SearchView data={{searchTerm: term, searchResults: result}} />
     </div>
   );
