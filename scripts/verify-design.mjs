@@ -41,7 +41,9 @@ const heroFont = await heroH1.evaluate((el) => getComputedStyle(el).fontFamily);
 ok('hero uses Anton', /Anton/i.test(heroFont), heroFont);
 
 const heroSize = await heroH1.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
-ok('hero headline ~188px @1440', heroSize === 188, `${heroSize}px`);
+// The headline shares a centred line with the campaign mark, so it sets
+// smaller than a full-bleed display line would.
+ok('hero headline ~104px @1440', heroSize === 104, `${heroSize}px`);
 
 const heroLH = await heroH1.evaluate((el) => {
   const s = getComputedStyle(el);
@@ -58,12 +60,33 @@ const imgLoaded = await page.locator('section[aria-roledescription="carousel"] i
   .evaluate((img) => img.complete && img.naturalWidth > 0);
 ok('hero campaign image loads (CSP allows host)', imgLoaded);
 
-const eyebrowLS = await page.locator('section[aria-roledescription="carousel"] p').first()
-  .evaluate((el) => {
-    const s = getComputedStyle(el);
-    return parseFloat(s.letterSpacing) / parseFloat(s.fontSize);
+// Mark, vertical rule and headline share one centred line, with the season
+// paragraph beneath it.
+const heroLine = await page.locator('section[aria-roledescription="carousel"]')
+  .evaluate((sec) => {
+    const mark = sec.querySelector('svg');
+    const rule = sec.querySelector('span[aria-hidden="true"]');
+    const h1 = sec.querySelector('h1');
+    const para = sec.querySelector('p:not(.sr-only)');
+    if (!mark || !h1 || !para) return null;
+    const m = mark.getBoundingClientRect();
+    const h = h1.getBoundingClientRect();
+    const s2 = sec.getBoundingClientRect();
+    return {
+      sameLine: Math.abs(m.top - h.top) < h.height,
+      markLeftOfHeadline: m.right <= h.left + 2,
+      hasRule: !!rule && rule.getBoundingClientRect().width <= 2,
+      // The mark+rule+headline group is centred as a unit. The headline
+      // alone is not: the mark sits to its left, which shifts it right.
+      centred: Math.abs((m.left - s2.left) - (s2.right - h.right)) < 40,
+      paraCentred: getComputedStyle(para).textAlign === 'center',
+    };
   });
-ok('hero eyebrow tracking 0.62em', Math.abs(eyebrowLS - 0.62) < 0.02, eyebrowLS.toFixed(3));
+ok('mark, rule and headline share one line',
+   heroLine?.sameLine && heroLine?.markLeftOfHeadline && heroLine?.hasRule,
+   JSON.stringify(heroLine));
+ok('hero content is centred', heroLine?.centred && heroLine?.paraCentred,
+   JSON.stringify(heroLine));
 
 // Square corners / no shadows.
 const rounded = await page.evaluate(() => {
@@ -378,7 +401,7 @@ ok('no horizontal scroll @390',
 
 const mHero = await mob.locator('section[aria-roledescription="carousel"] h1')
   .evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
-ok('mobile hero ~60px', mHero === 60, `${mHero}px`);
+ok('mobile hero ~38px', mHero === 38, `${mHero}px`);
 
 const mHeroH = await mob.locator('section[aria-roledescription="carousel"]')
   .evaluate((el) => el.getBoundingClientRect().height);

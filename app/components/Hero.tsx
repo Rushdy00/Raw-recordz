@@ -6,6 +6,39 @@ import type {HeroSlide} from '~/lib/vestige';
 const SLIDE_DURATION = 6500;
 
 /**
+ * The campaign mark that opens the hero line.
+ *
+ * An original VESTIGE glyph: two interlocking strokes cut from one ribbon,
+ * echoing the overlapping folds the season is built on. Drawn rather than
+ * loaded so it stays crisp at any size and needs no extra request.
+ */
+function HeroMark() {
+  return (
+    <svg
+      viewBox="0 0 132 84"
+      aria-hidden="true"
+      focusable="false"
+      className="h-[40px] w-auto shrink-0 lg:h-[84px]"
+    >
+      <path
+        d="M10 30C26 8 58 6 74 24c12 14 26 18 38 10 9-6 11-18 3-26"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="14"
+        strokeLinecap="round"
+      />
+      <path
+        d="M122 54C106 76 74 78 58 60 46 46 32 42 20 50c-9 6-11 18-3 26"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="14"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/**
  * Full-bleed campaign slideshow.
  *
  * Slides crossfade in place — there is no horizontal motion. Autoplay pauses on
@@ -88,33 +121,36 @@ export function Hero({slides}: {slides: HeroSlide[]}) {
         );
       })}
 
-      {/* Slide content */}
-      <div className="relative flex h-full flex-col justify-between px-5 py-10 text-paper lg:px-12 lg:py-14">
-        <p className="text-[11px] tracking-[0.62em] uppercase">
-          {active.eyebrow}
+      {/*
+        Slide content, centred: the monogram and headline share one line
+        divided by a vertical rule, with the season paragraph beneath and the
+        dots pinned to the bottom edge.
+      */}
+      <div className="relative flex h-full flex-col items-center justify-center px-5 py-10 text-center text-paper lg:px-12">
+        <Link
+          to={active.link}
+          prefetch="intent"
+          className="flex w-full items-center justify-center gap-4 lg:gap-7"
+        >
+          <HeroMark />
+
+          {/* Vertical rule between the mark and the headline. */}
+          <span
+            aria-hidden="true"
+            className="h-[46px] w-px shrink-0 bg-paper lg:h-[96px]"
+          />
+
+          <h1 className="hero-slide font-display text-[38px] leading-[0.9] uppercase lg:text-[104px] lg:leading-[0.88]">
+            {active.headline}
+          </h1>
+        </Link>
+
+        <p className="mt-6 max-w-[46ch] text-[12px] leading-[1.6] text-paper lg:mt-7 lg:max-w-[128ch] lg:text-[15px] lg:leading-[1.5]">
+          {active.copy.join(' ')}
         </p>
 
-        <div className="max-w-full lg:max-w-[70%]">
-          <Link to={active.link} prefetch="intent" className="block">
-            <h1 className="hero-slide font-display text-[60px] leading-[0.9] uppercase lg:text-[188px] lg:leading-[0.82]">
-              {active.headline}
-            </h1>
-          </Link>
-
-          <div className="mt-6 space-y-[6px] lg:mt-8">
-            {active.copy.map((line) => (
-              <p
-                key={line}
-                className="text-[11px] leading-[1.5] tracking-[0.14em] uppercase lg:text-[12px]"
-              >
-                {line}
-              </p>
-            ))}
-          </div>
-        </div>
-
         {/* Dots. The mark stays 8px; the button around it is a 32px target. */}
-        <div className="flex justify-center pt-6">
+        <div className="absolute inset-x-0 bottom-3 flex justify-center lg:bottom-5">
           {slides.map((slide, slideIndex) => (
             <button
               key={slide.id}

@@ -75,10 +75,10 @@ export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
     eyebrow: 'FALL / WINTER 2026 COLLECTION',
     headline: 'OBSIDIAN LINE',
     copy: [
-      'A STUDY IN VOLCANIC GLASS AND FOLDED WOOL.',
-      'CUT ONCE, FINISHED BY HAND, NUMBERED IN SEQUENCE.',
-      'FORTY PIECES RELEASED ACROSS THREE DROPS.',
-      'ARCHIVE PRICING HOLDS FOR MEMBERS ONLY.',
+      'VESTIGE 26FW draws from volcanic glass and folded wool — surfaces that',
+      'record pressure and time. Each garment is cut once, finished by hand and',
+      'numbered in sequence, with forty pieces released across three drops.',
+      'Nothing is restocked once a run closes.',
     ],
     link: `/collections/${DROP_COLLECTION_HANDLE}`,
     image: {
@@ -93,10 +93,10 @@ export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
     eyebrow: 'FALL / WINTER 2026 COLLECTION',
     headline: 'ASH REGISTER',
     copy: [
-      'DRY PIGMENT PRESSED INTO HEAVYWEIGHT COTTON.',
-      'SEAMS LEFT VISIBLE AS A RECORD OF ASSEMBLY.',
-      'EACH GARMENT CARRIES ITS OWN EDITION MARK.',
-      'AVAILABLE WHILE THE RUN LASTS.',
+      'Dry pigment is pressed into heavyweight cotton and left to settle',
+      'unevenly, so no two pieces weather alike. Seams stay visible as a record',
+      'of assembly, and every garment carries its own edition mark.',
+      'Available only while the run lasts.',
     ],
     link: `/collections/${DROP_COLLECTION_HANDLE}`,
     image: {
@@ -111,10 +111,10 @@ export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
     eyebrow: 'FALL / WINTER 2026 COLLECTION',
     headline: 'STONE INDEX',
     copy: [
-      'PROPORTIONS DRAWN FROM QUARRIED ARCHITECTURE.',
-      'WEIGHTED HEMS THAT HOLD THEIR OWN SHAPE.',
-      'NATURAL DYES THAT SHIFT WITH WEAR.',
-      'NO RESTOCKS ONCE THE RUN CLOSES.',
+      'Proportions are drawn from quarried architecture — load-bearing lines',
+      'translated into cloth. Weighted hems hold their own shape, and natural',
+      'dyes shift with wear rather than fading uniformly.',
+      'The index closes when the stone runs out.',
     ],
     link: `/collections/${DROP_COLLECTION_HANDLE}`,
     image: {
@@ -129,10 +129,10 @@ export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
     eyebrow: 'FALL / WINTER 2026 COLLECTION',
     headline: 'IRON SEASON',
     copy: [
-      'OUTERWEAR BUILT TO OUTLAST ITS OWN DECADE.',
-      'HARDWARE MACHINED FROM SOLID BAR STOCK.',
-      'LININGS QUILTED FOR NORTHERN WINTERS.',
-      'DELIVERED IN NUMBERED ARCHIVE BOXES.',
+      'Outerwear built to outlast its own decade: hardware machined from solid',
+      'bar stock, linings quilted for northern winters, and shells that stiffen',
+      'against weather before they soften into shape.',
+      'Delivered in numbered archive boxes.',
     ],
     link: `/collections/${DROP_COLLECTION_HANDLE}`,
     image: {
