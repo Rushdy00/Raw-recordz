@@ -207,7 +207,11 @@ function NavRow({
               className="flex items-center gap-1 uppercase"
             >
               {item.title}
-              <span aria-hidden="true" className="text-[9px]">
+              {/* Sits slightly low against the uppercase cap height. */}
+              <span
+                aria-hidden="true"
+                className="relative top-px text-[13px] leading-none"
+              >
                 &#9662;
               </span>
             </button>
