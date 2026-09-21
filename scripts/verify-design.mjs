@@ -20,6 +20,13 @@ const browser = await chromium.launch();
 const ctx = await browser.newContext({viewport: {width: 1440, height: 900}});
 const page = await ctx.newPage();
 
+// Suppress the first-visit newsletter popup in this context: it fires on a
+// timer and would intercept clicks mid-run. Its own behaviour is asserted
+// further down in a dedicated, isolated context.
+await page.addInitScript(() => {
+  try { window.localStorage.setItem('vestige:newsletter-seen', '1'); } catch {}
+});
+
 const errors = [];
 page.on('pageerror', (e) => errors.push(String(e)));
 page.on('console', (m) => {
