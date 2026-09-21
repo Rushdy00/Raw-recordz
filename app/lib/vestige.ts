@@ -144,11 +144,34 @@ export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
   },
 ];
 
+/**
+ * Footer brand statement, set as two short paragraphs beside the newsletter
+ * signup. The longer archive story lives on /pages/about.
+ */
+export const BRAND_STORY_LINES = [
+  'VESTIGE builds a contemporary wardrobe shaped by archaeology, inherited craft and modern construction.',
+  'The V Mark traces two folds of one ribbon, standing for what erodes and what is rebuilt around the body.',
+];
+
+/** Kept for the about page and anywhere the long form is wanted. */
 export const BRAND_STORY =
   'VESTIGE works from what is left behind. Each season begins in an archive — a fragment of masonry, a funerary textile, a tool worn smooth by a hand that is no longer here — and ends in a garment built to survive the same distance. We cut in small numbered runs, finish by hand in a single workshop, and release only when a piece is right rather than when a calendar says so. Nothing is restocked. What you buy becomes, in time, someone else’s artifact.';
 
+/** Newsletter invitation shown above the footer signup field. */
+export const NEWSLETTER_PITCH =
+  'Join VESTIGE members — get 10% off your first order, plus early access to every drop.';
+
+/** Social accounts linked from the footer. */
+export const SOCIAL_LINKS = [
+  {name: 'Instagram', url: 'https://instagram.com'},
+  {name: 'TikTok', url: 'https://tiktok.com'},
+  {name: 'YouTube', url: 'https://youtube.com'},
+  {name: 'LINE', url: 'https://line.me'},
+  {name: 'WhatsApp', url: 'https://whatsapp.com'},
+];
+
 export const FOOTER_LINKS = [
-  {title: 'ABOUT', url: '/pages/about'},
+  {title: 'ABOUT VESTIGE', url: '/pages/about'},
   {title: 'CONTACT', url: '/pages/contact'},
   {title: 'FAQ', url: '/pages/faq'},
   {title: 'PRIVACY', url: '/pages/privacy'},

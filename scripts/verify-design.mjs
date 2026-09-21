@@ -297,7 +297,9 @@ ok('header cart count updated',
    /[1-9]/.test(await page.locator('header button[aria-label^="Open cart"]').textContent()));
 
 // ---------- Region modal ----------
-await page.locator('footer button').first().click();
+// Target the region button by its content: the footer's first button is now
+// the newsletter Subscribe action.
+await page.locator('footer button', {hasText: 'USD'}).first().click();
 await page.waitForTimeout(700);
 const region = page.locator('[role="dialog"]').first();
 ok('region modal opens', await region.isVisible());
