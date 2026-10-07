@@ -46,6 +46,15 @@ if (matches.length !== 1) {
 const [statement, binding] = matches[0];
 const adapter = `
 export default function handler(request, context) {
+  // Say what is wrong rather than failing with the worker's generic 500.
+  if (!process.env.SESSION_SECRET) {
+    return new Response(
+      'SESSION_SECRET is not set. Add it under Settings > Environment ' +
+        'Variables in the Vercel project, then redeploy.',
+      {status: 500},
+    );
+  }
+
   const env = {PUBLIC_STORE_DOMAIN: 'mock.shop', ...process.env};
   return ${binding}.fetch(request, env, context);
 }
