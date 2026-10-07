@@ -7,6 +7,14 @@
 :root {
   --header-height: 132px;
   --header-height-mobile: 64px;
+  /* Rendered height of the sticky header bar alone, without the announcement. */
+  --sticky-header-height: 73px;
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --sticky-header-height: 107px;
+  }
 }
 
 /* Hero slides crossfade in place — no slide motion. */
@@ -26,6 +34,70 @@
 @media (prefers-reduced-motion: reduce) {
   .hero-slide {
     animation: none;
+  }
+}
+
+/*
+ * Footer reveal. The footer is fixed to the bottom of the viewport and the
+ * content layer, opaque and stacked above it, scrolls away to uncover it.
+ *
+ * Stacking order, low to high: footer (0), content layer (1), floating pills
+ * (40), sticky header (50), drawers (90), modals (100).
+ */
+.content-layer {
+  position: relative;
+  z-index: 1;
+  /* Takes over from `main` as the flex child that fills the body. */
+  flex: 1 0 auto;
+  background: #fff;
+  /*
+   * Scroll room for the footer. useFooterReveal sets --footer-h to the
+   * measured height; the default holds the layout steady until it does.
+   */
+  margin-bottom: var(--footer-h, 520px);
+  /* The one shadow in the storefront: it lifts the page off the footer. */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.footer-reveal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  width: 100%;
+  /*
+   * Capped to the viewport below the sticky header, which would otherwise
+   * cover the top of a tall footer; anything beyond that scrolls in place.
+   */
+  max-height: calc(100vh - var(--sticky-header-height));
+  max-height: calc(100dvh - var(--sticky-header-height));
+  overflow-y: auto;
+  background: var(--color-paper);
+}
+
+/* The footer fades up as it is uncovered; it does not scale. */
+.footer-reveal-inner {
+  transition: opacity 600ms ease-out;
+}
+
+.footer-reveal[data-revealed='false'] .footer-reveal-inner {
+  opacity: 0.6;
+}
+
+/* Marks the end of <main> for the reveal's IntersectionObserver. */
+.footer-sentinel {
+  height: 1px;
+  margin-top: -1px;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-reveal-inner {
+    transition: none;
+  }
+
+  .footer-reveal[data-revealed='false'] .footer-reveal-inner {
+    opacity: 1;
   }
 }
 

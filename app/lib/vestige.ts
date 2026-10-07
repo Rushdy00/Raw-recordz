@@ -1,5 +1,5 @@
 /**
- * VESTIGE brand content and the fallbacks used when a store has not yet been
+ * RAW RECORDZ brand content and the fallbacks used when a store has not yet been
  * populated with the metafields / metaobjects the storefront reads.
  *
  * Every value here is original placeholder copy. Once a real store defines
@@ -75,7 +75,7 @@ export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
     eyebrow: 'FALL / WINTER 2026 COLLECTION',
     headline: 'OBSIDIAN LINE',
     copy: [
-      'VESTIGE 26FW draws from volcanic glass and folded wool — surfaces that',
+      'RAW RECORDZ 26FW draws from volcanic glass and folded wool — surfaces that',
       'record pressure and time. Each garment is cut once, finished by hand and',
       'numbered in sequence, with forty pieces released across three drops.',
       'Nothing is restocked once a run closes.',
@@ -149,17 +149,17 @@ export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
  * signup. The longer archive story lives on /pages/about.
  */
 export const BRAND_STORY_LINES = [
-  'VESTIGE builds a contemporary wardrobe shaped by archaeology, inherited craft and modern construction.',
+  'RAW RECORDZ builds a contemporary wardrobe shaped by archaeology, inherited craft and modern construction.',
   'The V Mark traces two folds of one ribbon, standing for what erodes and what is rebuilt around the body.',
 ];
 
 /** Kept for the about page and anywhere the long form is wanted. */
 export const BRAND_STORY =
-  'VESTIGE works from what is left behind. Each season begins in an archive — a fragment of masonry, a funerary textile, a tool worn smooth by a hand that is no longer here — and ends in a garment built to survive the same distance. We cut in small numbered runs, finish by hand in a single workshop, and release only when a piece is right rather than when a calendar says so. Nothing is restocked. What you buy becomes, in time, someone else’s artifact.';
+  'RAW RECORDZ works from what is left behind. Each season begins in an archive — a fragment of masonry, a funerary textile, a tool worn smooth by a hand that is no longer here — and ends in a garment built to survive the same distance. We cut in small numbered runs, finish by hand in a single workshop, and release only when a piece is right rather than when a calendar says so. Nothing is restocked. What you buy becomes, in time, someone else’s artifact.';
 
 /** Newsletter invitation shown above the footer signup field. */
 export const NEWSLETTER_PITCH =
-  'Join VESTIGE members — get 10% off your first order, plus early access to every drop.';
+  'Join RAW RECORDZ members — get 10% off your first order, plus early access to every drop.';
 
 /** Social accounts linked from the footer. */
 export const SOCIAL_LINKS = [
@@ -171,7 +171,7 @@ export const SOCIAL_LINKS = [
 ];
 
 export const FOOTER_LINKS = [
-  {title: 'ABOUT VESTIGE', url: '/pages/about'},
+  {title: 'ABOUT RAW RECORDZ', url: '/pages/about'},
   {title: 'CONTACT', url: '/pages/contact'},
   {title: 'FAQ', url: '/pages/faq'},
   {title: 'PRIVACY', url: '/pages/privacy'},
@@ -249,7 +249,7 @@ export const PAGE_FALLBACKS: Record<
   about: {
     title: 'ABOUT',
     body: [
-      'VESTIGE is a small workshop making contemporary garments out of ancient evidence.',
+      'RAW RECORDZ is a small workshop making contemporary garments out of ancient evidence.',
       'We begin each season with an object that has already survived: a fragment of carved stone, a burial textile, a hand tool polished by decades of use. We study how it was made, what it was made to withstand, and what the passing of time did to it. The garment that follows is not a costume of that object. It is an attempt to build something with the same intention — to last, to be repaired rather than replaced, and to look better once it has been worn hard.',
       'Production is deliberately small. Every run is numbered and finished by hand in a single workshop. We do not restock. When a run closes, it stays closed, and the pieces that exist are the only ones that will.',
     ],

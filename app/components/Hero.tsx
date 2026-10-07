@@ -2,41 +2,9 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 import {Link} from 'react-router';
 import {Image} from '@shopify/hydrogen';
 import type {HeroSlide} from '~/lib/vestige';
+import {BrandLogo} from '~/components/Icons';
 
 const SLIDE_DURATION = 6500;
-
-/**
- * The campaign mark that opens the hero line.
- *
- * An original VESTIGE glyph: two interlocking strokes cut from one ribbon,
- * echoing the overlapping folds the season is built on. Drawn rather than
- * loaded so it stays crisp at any size and needs no extra request.
- */
-function HeroMark() {
-  return (
-    <svg
-      viewBox="0 0 132 84"
-      aria-hidden="true"
-      focusable="false"
-      className="h-[40px] w-auto shrink-0 lg:h-[84px]"
-    >
-      <path
-        d="M10 30C26 8 58 6 74 24c12 14 26 18 38 10 9-6 11-18 3-26"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="14"
-        strokeLinecap="round"
-      />
-      <path
-        d="M122 54C106 76 74 78 58 60 46 46 32 42 20 50c-9 6-11 18-3 26"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="14"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
 
 /**
  * Full-bleed campaign slideshow.
@@ -132,7 +100,8 @@ export function Hero({slides}: {slides: HeroSlide[]}) {
           prefetch="intent"
           className="flex w-full items-center justify-center gap-4 lg:gap-7"
         >
-          <HeroMark />
+          {/* The logo is dark artwork, so it is knocked out to white here. */}
+          <BrandLogo className="h-[40px] brightness-0 invert lg:h-[84px]" />
 
           {/* Vertical rule between the mark and the headline. */}
           <span

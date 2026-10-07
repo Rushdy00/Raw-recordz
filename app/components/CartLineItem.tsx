@@ -38,9 +38,9 @@ export function CartLineItem({
     (title && title !== 'Default Title' ? title : null);
 
   /*
-   * VESTIGE's own pieces are added against a borrowed Storefront variant, so
+   * RAW RECORDZ's own pieces are added against a borrowed Storefront variant, so
    * Shopify returns its product's title and image for the line. When the line
-   * carries VESTIGE's identity as attributes, prefer those.
+   * carries RAW RECORDZ's identity as attributes, prefer those.
    */
   const attr = (key: string) =>
     line.attributes?.find((item) => item.key === key)?.value || null;
@@ -87,9 +87,9 @@ export function CartLineItem({
 
         <div className="flex min-w-0 flex-1 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
           <div className="min-w-0 lg:max-w-[420px] lg:flex-1">
-            {/* A VESTIGE piece is ours regardless of the borrowed variant. */}
+            {/* A RAW RECORDZ piece is ours regardless of the borrowed variant. */}
             <p className="text-[13px] text-silver">
-              {overrideImageUrl ? 'VESTIGE' : product.vendor}
+              {overrideImageUrl ? 'RAW RECORDZ' : product.vendor}
             </p>
 
             <Link

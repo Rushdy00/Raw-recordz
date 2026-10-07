@@ -11,6 +11,7 @@
  *   npm run verify:design
  */
 import {chromium} from 'playwright';
+import {readFile} from 'node:fs/promises';
 
 const BASE = 'http://localhost:3000';
 const results = [];
@@ -64,7 +65,7 @@ ok('hero campaign image loads (CSP allows host)', imgLoaded);
 // paragraph beneath it.
 const heroLine = await page.locator('section[aria-roledescription="carousel"]')
   .evaluate((sec) => {
-    const mark = sec.querySelector('svg');
+    const mark = sec.querySelector('img[alt="RAW RECORDZ"]');
     const rule = sec.querySelector('span[aria-hidden="true"]');
     const h1 = sec.querySelector('h1');
     const para = sec.querySelector('p:not(.sr-only)');
@@ -116,9 +117,14 @@ ok('drop grid flush to edges', gridBox.x === 0 && Math.round(gridBox.width) === 
 ok('grid gap 1px', (await grid.evaluate((el) => getComputedStyle(el).gap)) === '1px');
 ok('drop grid 2 cols', (await grid.evaluate((el) =>
   getComputedStyle(el).gridTemplateColumns)).split(' ').length === 2);
-// The drop is VESTIGE's own catalogue (one product per photograph).
+// The drop is VESTIGE's own catalogue. The count tracks `SEEDS` in
+// app/lib/products.ts rather than a literal, so adding a piece does not
+// fail the check — what matters is that every piece reaches the grid.
+const seeds = (await readFile('app/lib/products.ts', 'utf8'))
+  .match(/^\s{4}handle: '/gm).length;
 const cardCount = await page.locator('.hairline-grid article').count();
-ok('drop grid renders the catalogue', cardCount === 4, String(cardCount));
+ok('drop grid renders the catalogue', cardCount === seeds,
+  `${cardCount} cards / ${seeds} products`);
 
 // Every card must use VESTIGE's own photography, not demo product shots.
 const ownImages = await page.evaluate(() =>

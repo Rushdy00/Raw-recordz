@@ -18,6 +18,7 @@ import {
   SearchFormPredictive,
 } from '~/components/SearchFormPredictive';
 import {SearchResultsPredictive} from '~/components/SearchResultsPredictive';
+import {useFooterReveal} from '~/hooks/useFooterReveal';
 
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -40,6 +41,8 @@ export function PageLayout({
   countries,
   selectedCountry,
 }: PageLayoutProps) {
+  const {contentRef, footerRef, sentinelRef, revealed} = useFooterReveal();
+
   return (
     <RegionProvider countries={countries} selectedCountry={selectedCountry}>
       <Aside.Provider>
@@ -56,12 +59,23 @@ export function PageLayout({
           />
         )}
 
-        <main>{children}</main>
+        {/*
+          The content layer is opaque and stacked above the fixed footer, so
+          scrolling past its end uncovers the footer beneath it.
+        */}
+        <div ref={contentRef} className="content-layer">
+          <main>
+            {children}
+            <div ref={sentinelRef} className="footer-sentinel" aria-hidden="true" />
+          </main>
+        </div>
 
         <Footer
           footer={footer}
           header={header}
           publicStoreDomain={publicStoreDomain}
+          revealRef={footerRef}
+          revealed={revealed}
         />
 
         <FloatingPills />

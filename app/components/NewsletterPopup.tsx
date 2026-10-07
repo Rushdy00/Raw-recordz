@@ -1,7 +1,7 @@
 import {useEffect, useId, useState} from 'react';
 import {useFetcher} from 'react-router';
 import {CloseButton, OverlayScrim, useOverlay} from '~/components/Overlay';
-import {Monogram} from '~/components/Icons';
+import {BrandLogo} from '~/components/Icons';
 
 const STORAGE_KEY = 'vestige:newsletter-seen';
 const DELAY_MS = 8000;
@@ -53,7 +53,7 @@ export function NewsletterPopup() {
         className="relative z-10 w-full max-w-[440px] border border-ink bg-paper p-8 lg:p-10"
       >
         <div className="flex items-start justify-between">
-          <Monogram />
+          <BrandLogo className="h-[34px]" />
           <CloseButton
             onClose={() => setOpen(false)}
             label="Close newsletter signup"
@@ -134,7 +134,7 @@ export function NewsletterPopup() {
             </button>
 
             <p className="mt-6 text-[9px] leading-[1.6] text-silver">
-              By subscribing you agree to receive marketing email from VESTIGE
+              By subscribing you agree to receive marketing email from RAW RECORDZ
               and accept our privacy policy. Unsubscribe at any time from the
               footer of any message.
             </p>

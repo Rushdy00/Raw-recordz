@@ -26,9 +26,11 @@ await p.waitForTimeout(1200);
 const cards = p.locator('.hairline-grid article');
 const total = await cards.count();
 let card = null;
+let cardIndex = -1;
 for (let i = 0; i < total; i++) {
   if ((await cards.nth(i).locator('img').count()) === 2) {
     card = cards.nth(i);
+    cardIndex = i;
     break;
   }
 }
@@ -102,7 +104,9 @@ await rp.addInitScript(() => {
 });
 await rp.goto(BASE, {waitUntil: 'networkidle'});
 await rp.waitForTimeout(900);
-const rCard = rp.locator('.hairline-grid article').first();
+// The same card as above: the grid mixes single- and multi-shot pieces, and
+// only a multi-shot one has a layer whose suppression can be observed.
+const rCard = rp.locator('.hairline-grid article').nth(cardIndex);
 await rCard.hover();
 await rp.waitForTimeout(900);
 const rOpacity = await rCard.locator('img').nth(1).evaluate((el) => getComputedStyle(el).opacity);
@@ -118,9 +122,13 @@ await tp.addInitScript(() => {
 });
 await tp.goto(BASE, {waitUntil: 'networkidle'});
 await tp.waitForTimeout(1500);
-const tDisplay = await tp.locator('.hairline-grid article').first()
-  .locator('.hover-swap').first()
-  .evaluate((el) => getComputedStyle(el).display);
+// Located by the layer itself rather than by card index: only multi-shot
+// pieces render one, and the mobile grid need not order cards as the desktop
+// grid does.
+const tLayer = tp.locator('.hairline-grid article .hover-swap').first();
+const tDisplay = (await tLayer.count())
+  ? await tLayer.evaluate((el) => getComputedStyle(el).display)
+  : 'none';
 ok('touch devices do not show the hover layer', tDisplay === 'none', tDisplay);
 
 const passed = results.filter((r) => r.pass).length;

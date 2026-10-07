@@ -10,7 +10,7 @@ import type {VestigeProductCardFragment} from 'storefrontapi.generated';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [
-    {title: `VESTIGE — ${data?.collection.title ?? 'Collection'}`},
+    {title: `RAW RECORDZ — ${data?.collection.title ?? 'Collection'}`},
     {name: 'description', content: data?.collection.description ?? ''},
   ];
 };

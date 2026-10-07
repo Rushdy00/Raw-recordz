@@ -3,6 +3,8 @@
  * carry the accessible label.
  */
 
+import logo from '~/assets/logo.webp';
+
 type IconProps = {className?: string};
 
 const base = 'h-[18px] w-[18px]';
@@ -90,16 +92,19 @@ export function ChatIcon({className = ''}: IconProps) {
   );
 }
 
-/** The 34px outlined square monogram that opens the header. */
-export function Monogram({size = 34}: {size?: number}) {
+/**
+ * The RAW RECORDZ logo. The artwork is dark, so it sits directly on paper;
+ * over campaign imagery pass `brightness-0 invert` to knock it out to white.
+ */
+export function BrandLogo({className = ''}: IconProps) {
   return (
-    <span
-      aria-hidden="true"
-      style={{width: size, height: size}}
-      className="inline-flex shrink-0 items-center justify-center border border-ink font-sans text-[15px] leading-none"
-    >
-      V
-    </span>
+    <img
+      src={logo}
+      alt="RAW RECORDZ"
+      width={900}
+      height={301}
+      className={`w-auto shrink-0 ${className}`}
+    />
   );
 }
 

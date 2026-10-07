@@ -9,7 +9,7 @@ import type {localProductByHandle} from '~/lib/products';
 type LocalProductData = NonNullable<ReturnType<typeof localProductByHandle>>;
 
 /**
- * Product page for VESTIGE's own pieces.
+ * Product page for RAW RECORDZ's own pieces.
  *
  * The Storefront product page leans on `getProductOptions` and the encoded
  * variant helpers, which expect the API's shape. Rather than fake that, local
@@ -29,19 +29,11 @@ export function LocalProduct({product}: {product: LocalProductData}) {
   const soldOut = selected ? !selected.availableForSale : true;
   const price = selected?.price ?? product.card.priceRange.minVariantPrice;
 
-  const image = {
-    id: `local-${product.code}`,
-    url: product.imageUrl,
-    altText: product.title,
-    width: product.imageWidth,
-    height: product.imageHeight,
-  };
-
   return (
     <div>
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_480px]">
         <div className="min-w-0 border-b border-ink lg:border-r lg:border-b-0">
-          <ProductGallery images={[image]} title={product.title} />
+          <ProductGallery images={product.images} title={product.title} />
         </div>
 
         <div className="lg:sticky lg:top-[132px] lg:h-fit">
@@ -105,7 +97,7 @@ export function LocalProduct({product}: {product: LocalProductData}) {
                         {
                           merchandiseId: selected.id,
                           quantity: 1,
-                          // See ProductCard: carries VESTIGE's identity onto
+                          // See ProductCard: carries RAW RECORDZ's identity onto
                           // a line backed by a borrowed Storefront variant.
                           attributes: [
                             {key: '_vestige_title', value: product.title},
@@ -176,7 +168,7 @@ export function LocalProduct({product}: {product: LocalProductData}) {
               id: product.card.id,
               title: product.title,
               price: price.amount,
-              vendor: 'VESTIGE',
+              vendor: 'RAW RECORDZ',
               variantId: selected?.id ?? '',
               variantTitle: selected?.title ?? '',
               quantity: 1,

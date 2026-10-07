@@ -20,6 +20,10 @@ interface FooterProps {
   footer: Promise<FooterQuery | null>;
   header: HeaderQuery;
   publicStoreDomain: string;
+  /** Attached to the fixed wrapper so its height can be measured. */
+  revealRef?: React.Ref<HTMLDivElement>;
+  /** False while the page content still covers the footer. */
+  revealed?: boolean;
 }
 
 const SOCIAL_ICONS: Record<string, (props: {className?: string}) => JSX.Element> =
@@ -35,12 +39,16 @@ const SOCIAL_ICONS: Record<string, (props: {className?: string}) => JSX.Element>
  * Footer, in stacked bands divided by hairlines: brand statement beside the
  * newsletter signup, then socials, then the link row, then payment marks with
  * the region selector, and finally the copyright.
+ *
+ * It is fixed to the bottom of the viewport behind the page content, which
+ * scrolls away to reveal it; the inner footer fades up as it does.
  */
-export function Footer(_props: FooterProps) {
+export function Footer({revealRef, revealed = true}: FooterProps) {
   const {open, country} = useRegion();
 
   return (
-    <footer className="border-t border-ink bg-paper">
+    <div ref={revealRef} className="footer-reveal" data-revealed={revealed}>
+    <footer className="footer-reveal-inner border-t border-ink bg-paper">
       {/* Brand statement | newsletter */}
       <div className="grid grid-cols-1 lg:grid-cols-2">
         <div className="border-b border-ink px-5 py-8 lg:border-r lg:border-b-0 lg:px-8 lg:py-10">
@@ -121,10 +129,11 @@ export function Footer(_props: FooterProps) {
       */}
       <div className="border-t border-ink px-5 pt-4 pb-24 text-center lg:px-[190px] lg:pt-5 lg:pb-8 lg:text-right">
         <p className="text-[12px] text-silver">
-          © 2026 VESTIGE. All rights reserved.
+          © 2026 RAW RECORDZ. All rights reserved.
         </p>
       </div>
     </footer>
+    </div>
   );
 }
 

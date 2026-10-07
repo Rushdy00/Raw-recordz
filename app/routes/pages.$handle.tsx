@@ -5,7 +5,7 @@ import {BackToTop} from '~/components/SeasonConcept';
 import {PAGE_FALLBACKS} from '~/lib/vestige';
 
 export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `VESTIGE — ${data?.title ?? ''}`}];
+  return [{title: `RAW RECORDZ — ${data?.title ?? ''}`}];
 };
 
 export async function loader(args: Route.LoaderArgs) {

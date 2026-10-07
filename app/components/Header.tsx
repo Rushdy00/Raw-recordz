@@ -7,7 +7,7 @@ import {
   AccountIcon,
   BagIcon,
   MenuIcon,
-  Monogram,
+  BrandLogo,
   SearchIcon,
 } from '~/components/Icons';
 import {ANNOUNCEMENT, NAV_ROWS, type NavItem} from '~/lib/vestige';
@@ -79,13 +79,10 @@ export function Header({header, cart, isLoggedIn}: HeaderProps) {
               to="/"
               prefetch="intent"
               end
-              className="flex items-center gap-3"
-              aria-label={`${header.shop.name} — home`}
+              className="flex items-center"
+              aria-label="RAW RECORDZ — home"
             >
-              <Monogram />
-              <span className="text-[15px] tracking-[0.34em] uppercase">
-                VESTIGE
-              </span>
+              <BrandLogo className="h-[34px] lg:h-[44px]" />
             </NavLink>
           </div>
 

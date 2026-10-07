@@ -1,5 +1,5 @@
 /**
- * VESTIGE's own products.
+ * RAW RECORDZ's own products.
  *
  * Each entry is keyed by the number in its photograph's filename
  * (`0729person_<number>.webp`) — a different number is a different product.
@@ -26,6 +26,14 @@ type LocalProductSeed = {
   title: string;
   price: string;
   description: string;
+  /**
+   * How many photographs this piece has, in `<code>-<n>.webp` form.
+   *
+   * Omitted means the single `<code>.webp` shot the first pieces were shot
+   * with. Anything higher reads `<code>-1.webp` … `<code>-<shots>.webp`, in
+   * order, and that order is the gallery's — front, side, angle, back.
+   */
+  shots?: number;
   /** Sizes that have sold out of this run. */
   soldOut?: string[];
   /**
@@ -98,20 +106,79 @@ const SEEDS: LocalProductSeed[] = [
     description:
       'A scarf panel is knitted in one with the hood and left to hang loose to the knee. Studded forearm plates and an asymmetric wrap front give the piece its line when the arms are raised.',
   },
+  {
+    code: '11202',
+    shots: 5,
+    variantIds: [
+      'gid://shopify/ProductVariant/43696903847958',
+      'gid://shopify/ProductVariant/43696903979030',
+      'gid://shopify/ProductVariant/43696904110102',
+      'gid://shopify/ProductVariant/43696904241174',
+    ],
+    handle: 'scaled-hood-scarf-long-sleeve',
+    title: 'Scaled Hood Scarf Long Sleeve — Rust',
+    price: '184.00',
+    description:
+      'A ribbed knit hood runs into a fringed scarf long enough to wrap twice and still fall past the hip. The body is mineral-washed to a dry rust and printed with a tonal scale pattern that surfaces only in raking light. Snap-fastened cuffs, raw shoulder seams.',
+    soldOut: ['X-Large'],
+  },
+  {
+    code: '11704',
+    shots: 2,
+    variantIds: [
+      'gid://shopify/ProductVariant/43696903880726',
+      'gid://shopify/ProductVariant/43696904011798',
+      'gid://shopify/ProductVariant/43696904142870',
+      'gid://shopify/ProductVariant/43696904273942',
+    ],
+    handle: 'brindle-hooded-layer',
+    title: 'Brindle Hooded Layer — Ash',
+    price: '178.00',
+    description:
+      'Cut from a fine open knit printed edge to edge with a brindle stripe, worn as a second skin over the shoulder. The hood falls into a draped cowl at the throat and the front panel is left unjoined, so the piece hangs asymmetrically from a single shoulder line.',
+  },
+  {
+    code: '13817',
+    shots: 3,
+    variantIds: [
+      'gid://shopify/ProductVariant/43696903946262',
+      'gid://shopify/ProductVariant/43696904077334',
+      'gid://shopify/ProductVariant/43696904208406',
+      'gid://shopify/ProductVariant/43696904339478',
+    ],
+    handle: 'armoured-panel-hoodie',
+    title: 'Armoured Panel Hoodie — Bone',
+    price: '248.00',
+    description:
+      'Padded panels are stitched over the chest and spine in a single continuous line, mapped to the body beneath. Eyeletted shoulder yokes carry an embroidered knot in oxblood thread. Heavy brushed fleece, sun-bleached at the seams, with a ribbed hem in contrast clay.',
+    soldOut: ['Small'],
+  },
 ];
 
-/** Builds a Storefront-shaped card so the local products render unchanged. */
-function toCard(seed: LocalProductSeed): VestigeProductCardFragment {
-  const url = `/products/${seed.code}.webp`;
-  const money = {amount: seed.price, currencyCode: 'USD' as const};
+/** Every photograph of a piece, in gallery order. */
+function toImages(seed: LocalProductSeed) {
+  const urls = seed.shots
+    ? Array.from(
+        {length: seed.shots},
+        (_, index) => `/products/${seed.code}-${index + 1}.webp`,
+      )
+    : [`/products/${seed.code}.webp`];
 
-  const image = {
-    id: `gid://vestige/ProductImage/${seed.code}`,
+  return urls.map((url, index) => ({
+    id: `gid://vestige/ProductImage/${seed.code}-${index + 1}`,
     url,
     altText: seed.title,
     width: IMAGE_WIDTH,
     height: IMAGE_HEIGHT,
-  };
+  }));
+}
+
+/** Builds a Storefront-shaped card so the local products render unchanged. */
+function toCard(seed: LocalProductSeed): VestigeProductCardFragment {
+  const money = {amount: seed.price, currencyCode: 'USD' as const};
+
+  const images = toImages(seed);
+  const [image] = images;
 
   const variants = SIZES.map((size, index) => ({
     id: seed.variantIds[index],
@@ -129,9 +196,9 @@ function toCard(seed: LocalProductSeed): VestigeProductCardFragment {
     title: seed.title,
     handle: seed.handle,
     featuredImage: image,
-    // A single photograph per product, so there is no second shot for the
-    // hover crossfade; the card skips it rather than fading into itself.
-    images: {nodes: [image]},
+    // Pieces shot once have no second frame for the card's hover crossfade;
+    // the card skips it rather than fading into itself.
+    images: {nodes: images},
     priceRange: {minVariantPrice: money},
     compareAtPriceRange: {minVariantPrice: money},
     selectedOrFirstAvailableVariant: firstAvailable
@@ -141,7 +208,7 @@ function toCard(seed: LocalProductSeed): VestigeProductCardFragment {
   } as VestigeProductCardFragment;
 }
 
-/** Every VESTIGE product, in the order they appear in the grid. */
+/** Every RAW RECORDZ product, in the order they appear in the grid. */
 export const LOCAL_PRODUCTS: VestigeProductCardFragment[] = SEEDS.map(toCard);
 
 /** Full detail for the product page, keyed by handle. */
@@ -151,7 +218,8 @@ export const LOCAL_PRODUCT_DETAIL = new Map(
     {
       ...seed,
       card: toCard(seed),
-      imageUrl: `/products/${seed.code}.webp`,
+      images: toImages(seed),
+      imageUrl: toImages(seed)[0].url,
       imageWidth: IMAGE_WIDTH,
       imageHeight: IMAGE_HEIGHT,
       sizes: SIZES,

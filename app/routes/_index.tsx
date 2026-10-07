@@ -19,7 +19,7 @@ const DROP_PRODUCT_COUNT = 6;
 
 export const meta: Route.MetaFunction = () => {
   return [
-    {title: 'VESTIGE — 2026 FW Obsidian Line'},
+    {title: 'RAW RECORDZ — 2026 FW Obsidian Line'},
     {
       name: 'description',
       content:
@@ -58,7 +58,7 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
       .catch(() => null),
   ]);
 
-  // VESTIGE's own catalogue comes first. Remove ~/lib/products once a real
+  // RAW RECORDZ's own catalogue comes first. Remove ~/lib/products once a real
   // store is linked and the Storefront results below take over.
   let dropProducts: VestigeProductCardFragment[] = LOCAL_PRODUCTS;
 

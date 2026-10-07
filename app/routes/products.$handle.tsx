@@ -27,7 +27,7 @@ export const meta: Route.MetaFunction = ({data}) => {
     '';
 
   return [
-    {title: `VESTIGE — ${title}`},
+    {title: `RAW RECORDZ — ${title}`},
     {rel: 'canonical', href: `/products/${handle}`},
     {name: 'description', content: description},
   ];
@@ -46,7 +46,7 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     throw new Error('Expected product handle to be defined');
   }
 
-  // VESTIGE's own pieces are served from local data, not the Storefront API.
+  // RAW RECORDZ's own pieces are served from local data, not the Storefront API.
   const local = localProductByHandle(handle);
   if (local) {
     return {product: null, local};

@@ -199,7 +199,7 @@ export function ProductCard({
                     merchandiseId: selected.id,
                     quantity: 1,
                     /*
-                     * VESTIGE's own pieces borrow a real Storefront variant so
+                     * RAW RECORDZ's own pieces borrow a real Storefront variant so
                      * the cart accepts them, which means Shopify returns its
                      * own title and image for the line. These attributes carry
                      * the real identity through, and the cart renders them in

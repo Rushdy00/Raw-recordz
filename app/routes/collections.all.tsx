@@ -8,7 +8,7 @@ import {VESTIGE_PRODUCT_CARD_FRAGMENT} from '~/lib/fragments';
 import type {VestigeProductCardFragment} from 'storefrontapi.generated';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: 'VESTIGE — All'}];
+  return [{title: 'RAW RECORDZ — All'}];
 };
 
 export async function loader(args: Route.LoaderArgs) {
