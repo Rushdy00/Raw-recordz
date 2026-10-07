@@ -41,7 +41,10 @@ export async function createHydrogenRouterContext(
 
   const waitUntil = executionContext.waitUntil.bind(executionContext);
   const [cache, session] = await Promise.all([
-    caches.open('hydrogen'),
+    // Oxygen provides the Cache API; hosts without it run uncached.
+    typeof caches === 'undefined'
+      ? undefined
+      : caches.open('hydrogen').catch(() => undefined),
     AppSession.init(request, [env.SESSION_SECRET]),
   ]);
 

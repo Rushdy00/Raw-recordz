@@ -12,3 +12,6 @@
 
 shots/
 
+
+# Vercel build output
+.vercel
