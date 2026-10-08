@@ -62,7 +62,8 @@ export type HeroSlide = {
 };
 
 /**
- * Placeholder campaign imagery: dark, low-key editorial frames from Unsplash
+ * Campaign imagery. The first slide is RAW RECORDZ's own frame, served from
+ * `public/hero/`; the rest are dark, low-key editorial frames from Unsplash
  * standing in for the real shoot. They carry no third-party branding.
  *
  * Each was chosen for mean luminance under ~80/255 so the white display type
@@ -82,10 +83,11 @@ export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
     ],
     link: `/collections/${DROP_COLLECTION_HANDLE}`,
     image: {
-      url: 'https://images.unsplash.com/photo-1771514021578-d4fd16565a62?auto=format&fit=crop&w=2400&q=70',
-      altText: 'Campaign figure in near-darkness wearing a long structured coat',
-      width: 2400,
-      height: 1600,
+      url: '/hero/desert-fur.webp',
+      altText:
+        'Figure in a long fur coat and wide-leg raw denim leaning on a boulder in a grey desert',
+      width: 1672,
+      height: 941,
     },
   },
   {
