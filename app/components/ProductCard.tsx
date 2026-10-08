@@ -1,9 +1,10 @@
-import {useId, useMemo, useState} from 'react';
+import {useCallback, useEffect, useId, useMemo, useRef, useState} from 'react';
 import {Link} from 'react-router';
 import {Image, Money} from '@shopify/hydrogen';
 import type {VestigeProductCardFragment} from 'storefrontapi.generated';
 import {AddToCartButton} from '~/components/AddToCartButton';
 import {useAside} from '~/components/Aside';
+import {Chevron} from '~/components/ProductGallery';
 
 type CardVariant = NonNullable<
   VestigeProductCardFragment['variants']
@@ -28,6 +29,9 @@ function variantLabel(variant: CardVariant) {
  * are the grid's background showing through, so the card itself carries no
  * border. The image sits on `--color-shell` at a fixed aspect ratio so the grid
  * never shifts as images load.
+ *
+ * Every shot of the piece sits side by side in that well: a swipe slides
+ * between them on touch, and boxed arrows do the same for a mouse or keyboard.
  *
  * A variant selector sits directly above the black action bar so a shopper can
  * choose a size and add to cart from the grid, without opening the product
@@ -82,52 +86,113 @@ export function ProductCard({
   // The chosen variant's own shot wins, so picking a colour changes the card.
   const image = selected?.image ?? product.featuredImage ?? gallery[0];
 
-  // Hover reveals the next shot. Skip it when that would just crossfade the
-  // image into itself (single-image products, or a variant-specific shot).
-  const hoverImage = gallery.find((shot) => shot.id !== image?.id) ?? null;
+  // The slides: that shot first, then the rest of the gallery in order.
+  const slides = image
+    ? [image, ...gallery.filter((shot) => shot.id !== image.id)]
+    : [];
+
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [slideIndex, setSlideIndex] = useState(0);
+
+  // The track is a native scroller, so the index is read back from it rather
+  // than driven: a swipe and an arrow press end up in the same place.
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    function measure() {
+      if (!track || !track.clientWidth) return;
+      setSlideIndex(Math.round(track.scrollLeft / track.clientWidth));
+    }
+
+    track.addEventListener('scroll', measure, {passive: true});
+    return () => track.removeEventListener('scroll', measure);
+  }, []);
+
+  // A variant switch puts a different shot first; return to it.
+  useEffect(() => {
+    trackRef.current?.scrollTo({left: 0, behavior: 'instant'});
+  }, [image?.id]);
+
+  const slideTo = useCallback((next: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    track.scrollTo({left: next * track.clientWidth});
+  }, []);
+
+  const arrowClass =
+    'pointer-events-none absolute top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center border-y border-ink bg-paper text-ink opacity-0 transition-opacity duration-200 group-hover:pointer-events-auto group-hover:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100 motion-reduce:transition-none';
 
   return (
     <article className="group flex min-w-0 flex-col bg-paper">
-      <Link
-        to={`/products/${product.handle}`}
-        prefetch="intent"
-        className="block"
-        tabIndex={-1}
-        aria-hidden="true"
+      <div
+        className={`relative ${imageHeightClass} w-full overflow-hidden bg-shell`}
       >
-        <div
-          className={`relative ${imageHeightClass} w-full overflow-hidden bg-shell`}
+        <Link
+          to={`/products/${product.handle}`}
+          prefetch="intent"
+          className="block h-full"
+          tabIndex={-1}
+          aria-hidden="true"
         >
-          {image ? (
-            <Image
-              data={image}
-              alt={image.altText || product.title}
-              sizes={sizes}
-              loading={loading}
-              className="h-full w-full object-cover object-top"
-            />
+          {slides.length ? (
+            <div
+              ref={trackRef}
+              className="flex h-full snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth [scrollbar-width:none] motion-reduce:scroll-auto [&::-webkit-scrollbar]:hidden"
+            >
+              {slides.map((slide, index) => (
+                <Image
+                  key={slide.id ?? slide.url}
+                  data={slide}
+                  alt={index === 0 ? slide.altText || product.title : ''}
+                  sizes={sizes}
+                  loading={index === 0 ? loading : 'lazy'}
+                  className="h-full w-full shrink-0 snap-start object-cover object-top"
+                />
+              ))}
+            </div>
           ) : (
             <div className="h-full w-full bg-shell" />
           )}
+        </Link>
 
-          {/*
-            Second shot, stacked on top and faded in on hover or keyboard
-            focus within the card. `.hover-swap` hides it outright on touch
-            screens, which cannot hover, and `motion-reduce` holds it hidden
-            so the card stays still for anyone who asked for less motion.
-          */}
-          {hoverImage ? (
-            <Image
-              data={hoverImage}
-              alt=""
+        {/*
+          Slide controls sit over the well rather than inside the link, so
+          pressing one moves the photograph instead of opening the product.
+          The arrows wait for a hover or keyboard focus; touch screens swipe
+          and only ever see the counter.
+        */}
+        {slides.length > 1 ? (
+          <>
+            {slideIndex > 0 ? (
+              <button
+                type="button"
+                onClick={() => slideTo(slideIndex - 1)}
+                aria-label={`Previous image of ${product.title}`}
+                className={`${arrowClass} left-0 border-r`}
+              >
+                <Chevron direction="left" />
+              </button>
+            ) : null}
+            {slideIndex < slides.length - 1 ? (
+              <button
+                type="button"
+                onClick={() => slideTo(slideIndex + 1)}
+                aria-label={`Next image of ${product.title}`}
+                className={`${arrowClass} right-0 border-l`}
+              >
+                <Chevron direction="right" />
+              </button>
+            ) : null}
+            <p
               aria-hidden="true"
-              sizes={sizes}
-              loading="lazy"
-              className="hover-swap absolute inset-0 h-full w-full object-cover object-top opacity-0 transition-opacity duration-500 ease-in-out group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:transition-none motion-reduce:group-hover:opacity-0 motion-reduce:group-focus-within:opacity-0"
-            />
-          ) : null}
-        </div>
-      </Link>
+              className="pointer-events-none absolute bottom-0 left-0 border-t border-r border-ink bg-paper px-3 py-2 text-[11px] leading-none tracking-[0.22em] tabular-nums"
+            >
+              {slideIndex + 1} / {slides.length}
+            </p>
+          </>
+        ) : null}
+      </div>
 
       <div className="flex flex-1 flex-col gap-3 px-5 pt-6 lg:px-7 lg:pt-8">
         <h3 className="text-[13px] leading-[1.3] tracking-[0.14em] uppercase">

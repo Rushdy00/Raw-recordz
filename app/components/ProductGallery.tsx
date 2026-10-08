@@ -202,7 +202,7 @@ function Filmstrip({
   );
 }
 
-function Chevron({direction}: {direction: 'left' | 'right'}) {
+export function Chevron({direction}: {direction: 'left' | 'right'}) {
   return (
     <svg
       width="18"

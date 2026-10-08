@@ -263,9 +263,8 @@ export const VESTIGE_PRODUCT_CARD_FRAGMENT = `#graphql
       width
       height
     }
-    # Two images are enough for the card: the first is the featured shot, the
-    # second is what the hover crossfade reveals.
-    images(first: 2) {
+    # The shots the card slides through, featured shot first.
+    images(first: 6) {
       nodes {
         id
         url
