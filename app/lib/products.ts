@@ -34,6 +34,11 @@ type LocalProductSeed = {
    * order, and that order is the gallery's — front, side, angle, back.
    */
   shots?: number;
+  /**
+   * Size & Fit copy for pieces the default — written for tops — does not
+   * describe.
+   */
+  fit?: string;
   /** Sizes that have sold out of this run. */
   soldOut?: string[];
   /**
@@ -152,6 +157,23 @@ const SEEDS: LocalProductSeed[] = [
     description:
       'Padded panels are stitched over the chest and spine in a single continuous line, mapped to the body beneath. Eyeletted shoulder yokes carry an embroidered knot in oxblood thread. Heavy brushed fleece, sun-bleached at the seams, with a ribbed hem in contrast clay.',
     soldOut: ['Small'],
+  },
+  {
+    code: '40001',
+    shots: 3,
+    variantIds: [
+      'gid://shopify/ProductVariant/43696932126742',
+      'gid://shopify/ProductVariant/43696932257814',
+      'gid://shopify/ProductVariant/43696932388886',
+      'gid://shopify/ProductVariant/43696932519958',
+    ],
+    handle: 'raw-denim-wide-leg-jean',
+    title: 'Raw Denim Wide-Leg Jean — Indigo',
+    price: '228.00',
+    description:
+      'Cut from a 14oz unwashed selvedge denim, left rigid so it creases and fades to the wearer. A four-button exposed fly sits on a mid rise, and a triple-needle seam in tobacco thread runs the full outseam, twisting forward as the leg widens. The hem is left long to stack and break over the shoe.',
+    fit: 'Sits on the hip with a mid rise and a full wide leg from thigh to hem, cut on a 34" inseam so the hem pools. Raw denim gives up to an inch at the waist with wear — between sizes, take the smaller one. Wash cold and rarely; expect the indigo to transfer at first.',
+    soldOut: ['Large'],
   },
 ];
 

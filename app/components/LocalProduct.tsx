@@ -133,9 +133,8 @@ export function LocalProduct({product}: {product: LocalProductData}) {
               <Accordion title="Size & Fit">
                 <div className="space-y-3 text-[13px] leading-[1.8]">
                   <p>
-                    Cut true to size with a deliberately generous shoulder and a
-                    straight body. Between sizes, take the smaller one for a
-                    closer line.
+                    {product.fit ??
+                      'Cut true to size with a deliberately generous shoulder and a straight body. Between sizes, take the smaller one for a closer line.'}
                   </p>
                   <p className="text-silver">
                     The model is 178cm and wears a size S.
