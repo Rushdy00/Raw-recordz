@@ -122,9 +122,12 @@ export function OverlayScrim({
   align = 'center',
   children,
   labelledBy,
+  scrimClassName = 'bg-[rgba(0,0,0,0.62)]',
 }: {
   onClose: () => void;
   align?: 'center' | 'right';
+  /** Backdrop tint. Glass panels take a lighter one so the page reads through. */
+  scrimClassName?: string;
   children: React.ReactNode;
   labelledBy: string;
 }) {
@@ -144,7 +147,7 @@ export function OverlayScrim({
         aria-label="Close"
         tabIndex={-1}
         onClick={onClose}
-        className="absolute inset-0 h-full w-full cursor-default bg-[rgba(0,0,0,0.62)]"
+        className={`absolute inset-0 h-full w-full cursor-default ${scrimClassName}`}
       />
       {children}
     </div>

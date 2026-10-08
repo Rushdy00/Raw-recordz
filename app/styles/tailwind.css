@@ -54,7 +54,7 @@
   --tracking-announce: 0.28em;
   --tracking-mega: 0.34em;
 
-  /* Square corners everywhere. The Rewards pill opts back in explicitly. */
+  /* Square corners everywhere, bar the explicit opt-ins in the base layer. */
   --radius-none: 0;
   --radius-xs: 0;
   --radius-sm: 0;
@@ -96,17 +96,14 @@
 
   /*
    * The scaffold rounds images by default; the art direction does not.
-   * Every corner in the storefront is square except the two elements that
-   * opt back in explicitly: the Rewards pill and the hero's circular dots.
+   * Every corner in the storefront is square except the elements that opt
+   * back in explicitly: the hero's circular dots and the newsletter popup's
+   * liquid glass (`.glass-*`, below).
    */
-  *:not(.is-pill, .is-round),
+  *:not(.is-round),
   *::before,
   *::after {
     border-radius: 0;
-  }
-
-  .is-pill {
-    border-radius: 9999px;
   }
 
   .is-round {
@@ -146,6 +143,90 @@
     background: var(--color-silver);
     border-color: var(--color-silver);
     cursor: not-allowed;
+  }
+
+  /*
+   * Liquid glass, used by the newsletter popup alone. The sheet is a faint
+   * white wash over a heavy backdrop blur, lit along its top edge and rounded
+   * like a poured surface — the one deliberate break from the square, opaque
+   * panels everywhere else. Type on it is white, so it wants a dimmed page
+   * behind it.
+   */
+  .glass-panel {
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.24),
+      rgba(255, 255, 255, 0.07) 45%,
+      rgba(255, 255, 255, 0.14)
+    );
+    -webkit-backdrop-filter: blur(26px) saturate(180%);
+    backdrop-filter: blur(26px) saturate(180%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.14),
+      inset 0 0 32px rgba(255, 255, 255, 0.07),
+      0 30px 80px rgba(0, 0, 0, 0.45);
+    color: var(--color-paper);
+  }
+
+  .glass-field {
+    width: 100%;
+    height: 50px;
+    padding: 0 22px;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    color: var(--color-paper);
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .glass-field::placeholder {
+    color: rgba(255, 255, 255, 0.62);
+  }
+
+  .glass-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    width: 100%;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: inset 0 1px 0 #ffffff;
+    color: var(--color-ink);
+    font-size: 13px;
+    letter-spacing: var(--tracking-button);
+    text-transform: uppercase;
+  }
+
+  .glass-btn:disabled {
+    background: rgba(255, 255, 255, 0.5);
+    cursor: not-allowed;
+  }
+
+  /*
+   * Without a backdrop blur the wash alone cannot carry white type, and some
+   * visitors ask for less transparency outright: both get a solid dark sheet.
+   */
+  @supports not (
+    (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+  ) {
+    .glass-panel {
+      background: rgba(18, 18, 18, 0.94);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .glass-panel {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      background: rgba(18, 18, 18, 0.96);
+    }
   }
 
   /*

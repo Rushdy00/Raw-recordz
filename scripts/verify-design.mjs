@@ -94,11 +94,11 @@ const rounded = await page.evaluate(() => {
   const bad = [];
   for (const el of document.querySelectorAll('*')) {
     const r = getComputedStyle(el).borderRadius;
-    if (r && r !== '0px' && !el.matches('.is-pill, .is-round')) bad.push(el.tagName);
+    if (r && r !== '0px' && !el.matches('.is-round, [class*="glass-"]')) bad.push(el.tagName);
   }
   return bad.slice(0, 5);
 });
-ok('no rounded corners (except pill/dots)', rounded.length === 0, rounded.join('|'));
+ok('no rounded corners (except dots/glass)', rounded.length === 0, rounded.join('|'));
 
 const shadowed = await page.evaluate(() => {
   const bad = [];

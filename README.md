@@ -63,8 +63,9 @@ Two things there are worth knowing before editing styles:
   components under Hydrogen's worker SSR — utilities used only in `.tsx` files
   were dropped from the build.
 
-Square corners are enforced globally. The two intentional exceptions opt back
-in with `.is-pill` (the Rewards pill) and `.is-round` (the hero dots).
+Square corners are enforced globally. The two intentional exceptions are
+`.is-round` (the hero dots) and the newsletter popup's liquid glass
+(`.glass-*`).
 
 ## Verifying the design
 

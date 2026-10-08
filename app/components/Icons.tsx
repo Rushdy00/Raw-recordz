@@ -76,22 +76,6 @@ export function MenuIcon({className = ''}: IconProps) {
   );
 }
 
-export function ChatIcon({className = ''}: IconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1"
-      aria-hidden="true"
-      focusable="false"
-      className={`h-[14px] w-[14px] ${className}`}
-    >
-      <path d="M21 12a8 8 0 0 1-8 8H4l2-3a8 8 0 1 1 15-5Z" />
-    </svg>
-  );
-}
-
 /**
  * The RAW RECORDZ logo. The artwork is dark, so it sits directly on paper;
  * over campaign imagery pass `brightness-0 invert` to knock it out to white.

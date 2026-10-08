@@ -103,11 +103,7 @@ export function Footer({revealRef, revealed = true}: FooterProps) {
         ))}
       </nav>
 
-      {/*
-        Payment marks and the region selector. The floating CHAT and REWARDS
-        pills are fixed over the bottom corners, so this band is inset and
-        given extra bottom padding to sit clear of them.
-      */}
+      {/* Payment marks and the region selector. */}
       <div className="flex flex-col gap-5 border-t border-ink px-5 py-6 lg:flex-row lg:items-center lg:justify-between lg:px-8 lg:py-8">
         <PaymentMarks />
 
@@ -123,11 +119,7 @@ export function Footer({revealRef, revealed = true}: FooterProps) {
         </button>
       </div>
 
-      {/*
-        The floating CHAT and REWARDS pills are fixed over the bottom corners,
-        so this last band is inset past them and padded to clear them.
-      */}
-      <div className="border-t border-ink px-5 pt-4 pb-24 text-center lg:px-[190px] lg:pt-5 lg:pb-8 lg:text-right">
+      <div className="border-t border-ink px-5 py-4 text-center lg:px-8 lg:py-5 lg:text-right">
         <p className="text-[12px] text-silver">
           © 2026 RAW RECORDZ. All rights reserved.
         </p>

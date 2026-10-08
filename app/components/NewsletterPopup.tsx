@@ -12,6 +12,9 @@ const DELAY_MS = 8000;
  * Fires once per visitor: a localStorage flag is written as soon as the popup
  * is shown, so dismissing, subscribing or simply leaving all prevent it from
  * appearing again.
+ *
+ * The panel is liquid glass — the one overlay that is neither square nor
+ * opaque: the page stays visible, blurred, through a rounded frosted sheet.
  */
 export function NewsletterPopup() {
   const [open, setOpen] = useState(false);
@@ -46,17 +49,23 @@ export function NewsletterPopup() {
   const succeeded = fetcher.data?.ok;
 
   return (
-    <OverlayScrim onClose={() => setOpen(false)} labelledBy={titleId}>
+    <OverlayScrim
+      onClose={() => setOpen(false)}
+      labelledBy={titleId}
+      scrimClassName="bg-[rgba(0,0,0,0.38)]"
+    >
       <div
         ref={containerRef}
         data-overlay-panel
-        className="relative z-10 w-full max-w-[440px] border border-ink bg-paper p-8 lg:p-10"
+        className="glass-panel on-dark relative z-10 w-full max-w-[440px] p-8 lg:p-10"
       >
         <div className="flex items-start justify-between">
-          <BrandLogo className="h-[34px]" />
+          {/* Dark artwork, knocked out to white as in the hero. */}
+          <BrandLogo className="h-[34px] brightness-0 invert" />
           <CloseButton
             onClose={() => setOpen(false)}
             label="Close newsletter signup"
+            className="text-paper"
           />
         </div>
 
@@ -68,13 +77,13 @@ export function NewsletterPopup() {
             >
               You&apos;re on the list
             </h2>
-            <p className="mt-4 text-[12px] leading-[1.6] tracking-[0.14em] text-silver uppercase">
+            <p className="mt-4 text-[12px] leading-[1.6] tracking-[0.14em] text-paper/75 uppercase">
               Your code arrives by email before the next drop.
             </p>
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="btn-ink mt-8"
+              className="glass-btn mt-8"
             >
               Continue
             </button>
@@ -88,7 +97,7 @@ export function NewsletterPopup() {
               Unlock 10% off your first drop
             </h2>
 
-            <p className="mt-4 text-[12px] leading-[1.6] tracking-[0.14em] text-silver uppercase">
+            <p className="mt-4 text-[12px] leading-[1.6] tracking-[0.14em] text-paper/75 uppercase">
               Members get early access, archive pricing and repair priority.
             </p>
 
@@ -104,7 +113,7 @@ export function NewsletterPopup() {
                 required
                 autoComplete="email"
                 placeholder="EMAIL ADDRESS"
-                className="w-full border border-ink px-4 py-4 text-[12px] tracking-[0.22em] uppercase placeholder:text-silver"
+                className="glass-field"
               />
 
               {fetcher.data?.error ? (
@@ -119,7 +128,7 @@ export function NewsletterPopup() {
               <button
                 type="submit"
                 disabled={fetcher.state !== 'idle'}
-                className="btn-ink mt-4"
+                className="glass-btn mt-4"
               >
                 {fetcher.state === 'idle' ? 'Continue' : 'Sending…'}
               </button>
@@ -128,12 +137,12 @@ export function NewsletterPopup() {
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="mt-6 block w-full text-center text-[11px] tracking-[0.22em] text-silver underline uppercase"
+              className="mt-6 block w-full text-center text-[11px] tracking-[0.22em] text-paper/75 underline uppercase"
             >
               Maybe later
             </button>
 
-            <p className="mt-6 text-[9px] leading-[1.6] text-silver">
+            <p className="mt-6 text-[9px] leading-[1.6] text-paper/65">
               By subscribing you agree to receive marketing email from RAW RECORDZ
               and accept our privacy policy. Unsubscribe at any time from the
               footer of any message.
