@@ -59,6 +59,11 @@ export type HeroSlide = {
     width: number;
     height: number;
   } | null;
+  /**
+   * The image is finished artwork that carries its own type, so the hero shows
+   * it bare — no scrim and no overlaid logo or headline.
+   */
+  poster?: boolean;
 };
 
 /**
@@ -71,6 +76,21 @@ export type HeroSlide = {
  * `scripts/pick-images.mjs` prints the luminance of any candidate.
  */
 export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
+  {
+    id: 'hero-poster',
+    eyebrow: 'FALL / WINTER 2026 COLLECTION',
+    headline: 'RAW RECORDZ FW26',
+    copy: ['Record Z1 — Rusty Cowboy.'],
+    link: `/collections/${DROP_COLLECTION_HANDLE}`,
+    image: {
+      url: '/hero/fw26-poster.jpg',
+      altText:
+        'RAW RECORDZ FW26 poster: a masked figure in a washed grey zip hoodie between hand-lettered "Raw Recordz", labelled Record Z1 and Rusty Cowboy',
+      width: 2170,
+      height: 725,
+    },
+    poster: true,
+  },
   {
     id: 'hero-1',
     eyebrow: 'FALL / WINTER 2026 COLLECTION',

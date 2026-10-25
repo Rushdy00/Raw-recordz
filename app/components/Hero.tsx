@@ -81,10 +81,12 @@ export function Hero({slides}: {slides: HeroSlide[]}) {
               <div className="h-full w-full bg-ink" />
             )}
             {/* Scrim keeps the white type legible over any frame. */}
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 bg-[rgba(0,0,0,0.34)]"
-            />
+            {!slide.poster && (
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-[rgba(0,0,0,0.34)]"
+              />
+            )}
           </div>
         );
       })}
@@ -95,10 +97,19 @@ export function Hero({slides}: {slides: HeroSlide[]}) {
         dots pinned to the bottom edge.
       */}
       <div className="relative flex h-full flex-col items-center justify-center px-5 py-10 text-center text-paper lg:px-12">
+        {/* A poster already carries its own type: the whole frame is the link. */}
+        {active.poster && (
+          <Link to={active.link} prefetch="intent" className="absolute inset-0">
+            <h1 className="sr-only">{active.headline}</h1>
+          </Link>
+        )}
+
         <Link
           to={active.link}
           prefetch="intent"
-          className="flex w-full items-center justify-center gap-4 lg:gap-7"
+          className={`flex w-full items-center justify-center gap-4 lg:gap-7 ${
+            active.poster ? 'hidden' : ''
+          }`}
         >
           {/* The logo is dark artwork, so it is knocked out to white here. */}
           <BrandLogo className="h-[40px] brightness-0 invert lg:h-[84px]" />
@@ -114,7 +125,11 @@ export function Hero({slides}: {slides: HeroSlide[]}) {
           </h1>
         </Link>
 
-        <p className="mt-6 max-w-[46ch] text-[12px] leading-[1.6] text-paper lg:mt-7 lg:max-w-[128ch] lg:text-[15px] lg:leading-[1.5]">
+        <p
+          className={`mt-6 max-w-[46ch] text-[12px] leading-[1.6] text-paper lg:mt-7 lg:max-w-[128ch] lg:text-[15px] lg:leading-[1.5] ${
+            active.poster ? 'hidden' : ''
+          }`}
+        >
           {active.copy.join(' ')}
         </p>
 
@@ -131,8 +146,15 @@ export function Hero({slides}: {slides: HeroSlide[]}) {
             >
               <span
                 aria-hidden="true"
-                className={`is-round block h-2 w-2 border border-paper ${
-                  slideIndex === index ? 'bg-paper' : 'bg-transparent'
+                /* Posters are light, so the dots switch to ink over them. */
+                className={`is-round block h-2 w-2 border ${
+                  active.poster ? 'border-ink' : 'border-paper'
+                } ${
+                  slideIndex === index
+                    ? active.poster
+                      ? 'bg-ink'
+                      : 'bg-paper'
+                    : 'bg-transparent'
                 }`}
               />
             </button>
