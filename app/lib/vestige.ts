@@ -83,11 +83,11 @@ export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
     copy: ['Record Z1 — Rusty Cowboy.'],
     link: `/collections/${DROP_COLLECTION_HANDLE}`,
     image: {
-      url: '/hero/fw26-poster.jpg',
+      url: '/hero/fw26-rusty-cowboy.jpg',
       altText:
         'RAW RECORDZ FW26 poster: a masked figure in a washed grey zip hoodie between hand-lettered "Raw Recordz", labelled Record Z1 and Rusty Cowboy',
-      width: 2170,
-      height: 725,
+      width: 1774,
+      height: 887,
     },
     poster: true,
   },
