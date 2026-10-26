@@ -64,19 +64,31 @@ export function Hero({slides}: {slides: HeroSlide[]}) {
             }`}
           >
             {slide.image ? (
-              <Image
-                data={slide.image}
-                alt={slide.image.altText}
-                sizes="100vw"
-                /* Only the first slide is above the fold. */
-                loading={slideIndex === 0 ? 'eager' : 'lazy'}
-                /*
-                 * React 18 does not recognise the camelCase `fetchPriority`
-                 * prop, so the lowercase DOM attribute is passed instead.
-                 */
-                {...{fetchpriority: slideIndex === 0 ? 'high' : 'auto'}}
-                className="h-full w-full object-cover"
-              />
+              /*
+               * With a mobile cut, each image is hidden at the other size.
+               * Lazy images under `display: none` are never fetched.
+               */
+              [
+                {data: slide.image, className: slide.mobileImage ? 'hidden lg:block' : ''},
+                ...(slide.mobileImage
+                  ? [{data: slide.mobileImage, className: 'lg:hidden'}]
+                  : []),
+              ].map(({data, className}) => (
+                <Image
+                  key={data.url}
+                  data={data}
+                  alt={data.altText}
+                  sizes="100vw"
+                  /* Only the first slide is above the fold. */
+                  loading={slideIndex === 0 ? 'eager' : 'lazy'}
+                  /*
+                   * React 18 does not recognise the camelCase `fetchPriority`
+                   * prop, so the lowercase DOM attribute is passed instead.
+                   */
+                  {...{fetchpriority: slideIndex === 0 ? 'high' : 'auto'}}
+                  className={`h-full w-full object-cover ${className}`}
+                />
+              ))
             ) : (
               <div className="h-full w-full bg-ink" />
             )}

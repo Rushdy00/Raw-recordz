@@ -64,6 +64,8 @@ export type HeroSlide = {
    * it bare — no scrim and no overlaid logo or headline.
    */
   poster?: boolean;
+  /** Portrait artwork shown below the desktop breakpoint in place of `image`. */
+  mobileImage?: HeroSlide['image'];
 };
 
 /**
@@ -88,6 +90,43 @@ export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
         'RAW RECORDZ FW26 poster: a masked figure in a washed grey zip hoodie between hand-lettered "Raw Recordz", labelled Record Z1 and Rusty Cowboy',
       width: 1774,
       height: 887,
+    },
+    poster: true,
+  },
+  {
+    id: 'hero-record-z1',
+    eyebrow: 'FALL / WINTER 2026 COLLECTION',
+    headline: "RECORD Z1'",
+    copy: ["RAW RECORDZ — Record Z1'."],
+    link: `/collections/${DROP_COLLECTION_HANDLE}`,
+    image: {
+      url: '/hero/fw26-record-z1.jpg',
+      altText:
+        "Masked figure in a washed grey RAW zip hoodie standing between the words Record and Z1' on white",
+      width: 2172,
+      height: 724,
+    },
+    mobileImage: {
+      url: '/hero/fw26-record-z1-mobile.jpg',
+      altText:
+        "Masked figure in a washed grey RAW zip hoodie beneath the words Record Z1' on white",
+      width: 941,
+      height: 1672,
+    },
+    poster: true,
+  },
+  {
+    id: 'hero-angel',
+    eyebrow: 'FALL / WINTER 2026 COLLECTION',
+    headline: 'SEEN THIS ANGEL?',
+    copy: ['Seen this Angel? — RAW RECORDZ.'],
+    link: `/collections/${DROP_COLLECTION_HANDLE}`,
+    image: {
+      url: '/hero/fw26-angel.jpg',
+      altText:
+        'Masked figure in a washed grey RAW zip hoodie between the words "seen this Angel?" and "RAW RECORDZ" on white',
+      width: 2172,
+      height: 724,
     },
     poster: true,
   },
