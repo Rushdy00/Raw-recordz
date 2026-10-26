@@ -79,21 +79,6 @@ export type HeroSlide = {
  */
 export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
   {
-    id: 'hero-poster',
-    eyebrow: 'FALL / WINTER 2026 COLLECTION',
-    headline: 'RAW RECORDZ FW26',
-    copy: ['Record Z1 — Rusty Cowboy.'],
-    link: `/collections/${DROP_COLLECTION_HANDLE}`,
-    image: {
-      url: '/hero/fw26-rusty-cowboy.jpg',
-      altText:
-        'RAW RECORDZ FW26 poster: a masked figure in a washed grey zip hoodie between hand-lettered "Raw Recordz", labelled Record Z1 and Rusty Cowboy',
-      width: 1774,
-      height: 887,
-    },
-    poster: true,
-  },
-  {
     id: 'hero-record-z1',
     eyebrow: 'FALL / WINTER 2026 COLLECTION',
     headline: "RECORD Z1'",
@@ -112,21 +97,6 @@ export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
         "Masked figure in a washed grey RAW zip hoodie beneath the words Record Z1' on white",
       width: 941,
       height: 1672,
-    },
-    poster: true,
-  },
-  {
-    id: 'hero-angel',
-    eyebrow: 'FALL / WINTER 2026 COLLECTION',
-    headline: 'SEEN THIS ANGEL?',
-    copy: ['Seen this Angel? — RAW RECORDZ.'],
-    link: `/collections/${DROP_COLLECTION_HANDLE}`,
-    image: {
-      url: '/hero/fw26-angel.jpg',
-      altText:
-        'Masked figure in a washed grey RAW zip hoodie between the words "seen this Angel?" and "RAW RECORDZ" on white',
-      width: 2172,
-      height: 724,
     },
     poster: true,
   },
