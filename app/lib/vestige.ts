@@ -68,38 +68,8 @@ export type HeroSlide = {
   mobileImage?: HeroSlide['image'];
 };
 
-/**
- * Campaign imagery. The first slide is RAW RECORDZ's own frame, served from
- * `public/hero/`; the rest are dark, low-key editorial frames from Unsplash
- * standing in for the real shoot. They carry no third-party branding.
- *
- * Each was chosen for mean luminance under ~80/255 so the white display type
- * and the 0.34 scrim hold up. Keep that in mind when swapping them out —
- * `scripts/pick-images.mjs` prints the luminance of any candidate.
- */
+/** The two approved campaign images, served locally from `public/hero/`. */
 export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
-  {
-    id: 'hero-record-z1',
-    eyebrow: 'FALL / WINTER 2026 COLLECTION',
-    headline: "RECORD Z1'",
-    copy: ["RAW RECORDZ — Record Z1'."],
-    link: `/collections/${DROP_COLLECTION_HANDLE}`,
-    image: {
-      url: '/hero/fw26-record-z1.jpg',
-      altText:
-        "Masked figure in a washed grey RAW zip hoodie standing between the words Record and Z1' on white",
-      width: 2172,
-      height: 724,
-    },
-    mobileImage: {
-      url: '/hero/fw26-record-z1-mobile.jpg',
-      altText:
-        "Masked figure in a washed grey RAW zip hoodie beneath the words Record Z1' on white",
-      width: 941,
-      height: 1672,
-    },
-    poster: true,
-  },
   {
     id: 'hero-1',
     eyebrow: 'FALL / WINTER 2026 COLLECTION',
@@ -131,46 +101,11 @@ export const HERO_SLIDES_FALLBACK: HeroSlide[] = [
     ],
     link: `/collections/${DROP_COLLECTION_HANDLE}`,
     image: {
-      url: 'https://images.unsplash.com/photo-1779810677455-449ae4ee2bc7?auto=format&fit=crop&w=2400&q=70',
-      altText: 'Sculptural jacket with voluminous sleeves against a black ground',
-      width: 2400,
-      height: 1600,
-    },
-  },
-  {
-    id: 'hero-3',
-    eyebrow: 'FALL / WINTER 2026 COLLECTION',
-    headline: 'STONE INDEX',
-    copy: [
-      'Proportions are drawn from quarried architecture — load-bearing lines',
-      'translated into cloth. Weighted hems hold their own shape, and natural',
-      'dyes shift with wear rather than fading uniformly.',
-      'The index closes when the stone runs out.',
-    ],
-    link: `/collections/${DROP_COLLECTION_HANDLE}`,
-    image: {
-      url: 'https://images.unsplash.com/photo-1782528013685-812fbcd20085?auto=format&fit=crop&w=2400&q=70',
-      altText: 'Figure in a fringed garment lit against a deep shadowed studio',
-      width: 2400,
-      height: 1600,
-    },
-  },
-  {
-    id: 'hero-4',
-    eyebrow: 'FALL / WINTER 2026 COLLECTION',
-    headline: 'IRON SEASON',
-    copy: [
-      'Outerwear built to outlast its own decade: hardware machined from solid',
-      'bar stock, linings quilted for northern winters, and shells that stiffen',
-      'against weather before they soften into shape.',
-      'Delivered in numbered archive boxes.',
-    ],
-    link: `/collections/${DROP_COLLECTION_HANDLE}`,
-    image: {
-      url: 'https://images.unsplash.com/photo-1776256318694-922979ab0a94?auto=format&fit=crop&w=2400&q=70',
-      altText: 'Desaturated street portrait of a figure in a heavy black coat',
-      width: 2400,
-      height: 1600,
+      url: '/hero/photo-1779810677455-449ae4ee2bc7.jpg',
+      altText:
+        'Masked figure in a sculptural jacket with voluminous sleeves against a dark ground',
+      width: 5206,
+      height: 3471,
     },
   },
 ];

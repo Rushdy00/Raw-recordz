@@ -11,7 +11,11 @@ import {
   SEASON_METAFIELDS_QUERY,
 } from '~/lib/fragments';
 import {heroSlidesFromMetaobjects, seasonStatementsFromMetafields} from '~/lib/season';
-import {DROP_COLLECTION_HANDLE, DROP_TITLE} from '~/lib/vestige';
+import {
+  DROP_COLLECTION_HANDLE,
+  DROP_TITLE,
+  HERO_SLIDES_FALLBACK,
+} from '~/lib/vestige';
 import {LOCAL_PRODUCTS} from '~/lib/products';
 import type {VestigeProductCardFragment} from 'storefrontapi.generated';
 
@@ -89,12 +93,13 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
 }
 
 export default function Homepage() {
-  const {slides, dropProducts, dropTitle, seasonStatements} =
+  const {dropProducts, dropTitle, seasonStatements} =
     useLoaderData<typeof loader>();
 
   return (
     <div>
-      <Hero slides={slides} />
+      {/* This campaign uses only the two approved local images. */}
+      <Hero slides={HERO_SLIDES_FALLBACK} />
 
       {/* Drop section */}
       <section aria-labelledby="drop-title">
