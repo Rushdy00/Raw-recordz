@@ -3,7 +3,7 @@
  * carry the accessible label.
  */
 
-import logo from '~/assets/logo.webp';
+import logo from '~/assets/logo.png';
 
 type IconProps = {className?: string};
 
@@ -77,7 +77,7 @@ export function MenuIcon({className = ''}: IconProps) {
 }
 
 /**
- * The RAW RECORDZ logo. The artwork is dark, so it sits directly on paper;
+ * The distressed RAW RECORDZ logo. The artwork is dark, so it sits directly on paper;
  * over campaign imagery pass `brightness-0 invert` to knock it out to white.
  */
 export function BrandLogo({className = ''}: IconProps) {
@@ -85,8 +85,8 @@ export function BrandLogo({className = ''}: IconProps) {
     <img
       src={logo}
       alt="RAW RECORDZ"
-      width={900}
-      height={301}
+      width={1000}
+      height={334}
       className={`w-auto shrink-0 ${className}`}
     />
   );
