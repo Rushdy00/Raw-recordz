@@ -4,6 +4,7 @@
  */
 
 import logo from '~/assets/logo.png';
+import logoLoop from '~/assets/logo-loop.gif';
 
 type IconProps = {className?: string};
 
@@ -87,6 +88,22 @@ export function BrandLogo({className = ''}: IconProps) {
       alt="RAW RECORDZ"
       width={1000}
       height={334}
+      className={`w-auto shrink-0 ${className}`}
+    />
+  );
+}
+
+/**
+ * The animated RAW RECORDZ logo loop used in the site header. It is opaque
+ * artwork on black, so it cannot be recoloured like BrandLogo.
+ */
+export function AnimatedBrandLogo({className = ''}: IconProps) {
+  return (
+    <img
+      src={logoLoop}
+      alt="RAW RECORDZ"
+      width={2048}
+      height={684}
       className={`w-auto shrink-0 ${className}`}
     />
   );

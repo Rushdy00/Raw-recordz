@@ -7,7 +7,7 @@ import {
   AccountIcon,
   BagIcon,
   MenuIcon,
-  BrandLogo,
+  AnimatedBrandLogo,
   SearchIcon,
 } from '~/components/Icons';
 import {ANNOUNCEMENT, NAV_ROWS, type NavItem} from '~/lib/vestige';
@@ -82,7 +82,7 @@ export function Header({header, cart, isLoggedIn}: HeaderProps) {
               className="flex items-center"
               aria-label="RAW RECORDZ — home"
             >
-              <BrandLogo className="h-[34px] lg:h-[44px]" />
+              <AnimatedBrandLogo className="h-[34px] lg:h-[44px]" />
             </NavLink>
           </div>
 
